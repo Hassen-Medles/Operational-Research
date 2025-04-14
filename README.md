@@ -2,7 +2,7 @@
 ## Overview :
 This project was developed as part of a CESI engineering school project by Zoé Izambert, Axel Calendreau, Hugo Battaglia, and Hassen Medles.
 ## Objective
-We aim to model and solve a Vehicle Routing Problem (VRP) — a generalization of the classic Travelling Salesman Problem (TSP) — by considering real-world constraints such as:
+We aim to model and solve a Vehicle Routing Problem (VRP), a generalization of the classic Travelling Salesman Problem (TSP), by considering real-world constraints such as:
 - Delivery time windows
 - Vehicle capacity
 - Available road networks
