@@ -11,10 +11,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@react-sigma/core": "^5.0.2",
     "@tailwindcss/vite": "^4.1.4",
     "axios": "^1.8.4",
+    "graphology": "^0.25.4",
+    "graphology-types": "^0.24.8",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "sigma": "^3.0.1",
     "tailwindcss": "^4.1.4"
   },
   "devDependencies": {
