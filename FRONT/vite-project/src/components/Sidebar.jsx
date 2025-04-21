@@ -27,13 +27,8 @@ const Sidebar = ({ onLoadConfig, showSidebar }) => {
         showSidebar ? "translate-x-0" : "-translate-x-full"
       } w-64`}
     >
-      <button
-        className="absolute top-2 right-2 text-xl"
-        onClick={() => setVisible(false)}
-      >
-        ×
-      </button>
-      <h2 className="text-lg font-bold p-4">Configurations enregistrées</h2>
+
+      <h2 className="text-lg font-bold p-4 pt-14">Configurations enregistrées</h2>
       <ul>
         {configs.map((name) => (
           <li
