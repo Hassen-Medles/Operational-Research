@@ -22,18 +22,30 @@ depot = 0
 nodes = [depot] + [i for i in range(1, num_clients + 1)]
 G = nx.Graph()
 for node in nodes:
-    G.add_node(node)
+    x_ratio = round(random.uniform(0, 1), 4)
+    y_ratio = round(random.uniform(0, 1), 4)
+    G.add_node(node, x_ratio=x_ratio, y_ratio=y_ratio)
 for i in nodes:
     for j in nodes:
         if i < j:
-            distance = round(random.uniform(1, 100), 2)
+            distance = round(random.uniform(1, 50), 2)
             cost = round(random.uniform(1, 50), 2)
             time = round(random.uniform(1, 60), 2)
             G.add_edge(i, j, distance=distance, cost=cost, time=time)
 
+
+
 dicograph = {
-    "Node": list(G.nodes()),
-    "Edges": [{"from": u, "to": v, **attrs} for u, v, attrs in G.edges(data=True)],
+    "Node": [
+        {
+            "id": node,
+            "x_ratio": G.nodes[node]["x_ratio"],
+            "y_ratio": G.nodes[node]["y_ratio"]
+        } for node in G.nodes()
+    ],
+    "Edges": [
+        {"from": u, "to": v, **attrs} for u, v, attrs in G.edges(data=True)
+    ],
 }
 
 @app.route("/")
@@ -74,18 +86,28 @@ def upload_image():
         file.save(filepath)
         saved_files.append(filename)
 
-    # Créer une nouvelle configuration à partir des données actuelles
-    config_name = f"config_{len(os.listdir(GRAPH_FOLDER)) + 1}.json"  # Exemple de nom pour la config
+    graph_str = request.form.get("graph")
+    if not graph_str:
+        return jsonify({"error": "No graph data provided"}), 400
+
+    try:
+        graph_data = json.loads(graph_str)
+    except json.JSONDecodeError:
+        return jsonify({"error": "Invalid JSON in graph data"}), 400
+
+# Créer une nouvelle configuration à partir de l'image et du graphe envoyé
+    config_name = f"config_{len(os.listdir(GRAPH_FOLDER)) + 1}.json"
     config_data = {
-        "image": saved_files[0],  # L'image envoyée
-        "graph": dicograph,  # Le graphe actuel
+    "image": saved_files[0],
+    "graph": graph_data,
     }
 
-    # Sauvegarder la configuration dans un fichier JSON
+# Sauvegarder la configuration dans un fichier JSON formaté
     with open(os.path.join(GRAPH_FOLDER, config_name), "w") as f:
-        json.dump(config_data, f)
+        json.dump(config_data, f, indent=4)  # Indentation ajoutée pour lisibilité
 
     response = jsonify({"status": "success", "saved": saved_files, "config_name": config_name})
+
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
 
@@ -95,22 +117,6 @@ def upload_image():
 @app.route("/image/<filename>")
 def serve_image(filename):
     return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
-
-@app.route("/add_node", methods=["POST"])
-def add_node():
-    data = request.get_json()
-    file_path = os.path.join(GRAPH_FOLDER, "nodes.txt")
-    with open(file_path, "a") as f:
-        f.write(json.dumps(data) + "\n")
-    return jsonify({"status": "success", "node": data})
-
-@app.route("/add_edge", methods=["POST"])
-def add_edge():
-    data = request.get_json()
-    file_path = os.path.join(GRAPH_FOLDER, "edges.txt")
-    with open(file_path, "a") as f:
-        f.write(json.dumps(data) + "\n")
-    return jsonify({"status": "success", "edge": data})
 
 
 
@@ -146,6 +152,36 @@ def load_config(filename):
     except FileNotFoundError:
         return jsonify({"error": "Configuration not found"}), 404
 
+@app.route("/delete_config/<filename>", methods=["DELETE", "OPTIONS"])
+def delete_config(filename):
+    if request.method == "OPTIONS":
+        # Réponse à la pré-requête CORS
+        response = app.make_response('')
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        response.headers.add("Access-Control-Allow-Methods", "DELETE, OPTIONS")
+        response.headers.add("Access-Control-Allow-Headers", "Content-Type")
+        return response
+
+    try:
+        # Construire le chemin du fichier à supprimer
+        file_path = os.path.join(GRAPH_FOLDER, filename)
+        
+        # Vérifier si le fichier existe
+        if os.path.exists(file_path):
+            os.remove(file_path)  # Supprimer le fichier
+            response = jsonify({"status": "success", "message": f"Configuration {filename} deleted"})
+        else:
+            response = jsonify({"error": "Configuration not found"}), 404
+
+        # Ajouter les en-têtes CORS à la réponse
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        response.headers.add("Access-Control-Allow-Methods", "DELETE, OPTIONS")
+        response.headers.add("Access-Control-Allow-Headers", "Content-Type")
+
+        return response
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":

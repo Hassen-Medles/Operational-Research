@@ -1,1 +1,141 @@
-{"image": "vinland-saga-1.jpg", "graph": {"Node": [0, 1, 2, 3, 4], "Edges": [{"from": 0, "to": 1, "distance": 64.3, "cost": 2.23, "time": 17.23}, {"from": 0, "to": 2, "distance": 23.1, "cost": 37.09, "time": 40.93}, {"from": 0, "to": 3, "distance": 89.33, "cost": 5.26, "time": 25.89}, {"from": 0, "to": 4, "distance": 3.95, "cost": 11.71, "time": 30.82}, {"from": 1, "to": 2, "distance": 3.63, "cost": 10.74, "time": 39.34}, {"from": 1, "to": 3, "distance": 54.95, "cost": 11.8, "time": 35.77}, {"from": 1, "to": 4, "distance": 81.13, "cost": 1.32, "time": 48.54}, {"from": 2, "to": 3, "distance": 70.12, "cost": 17.67, "time": 10.17}, {"from": 2, "to": 4, "distance": 95.76, "cost": 17.49, "time": 6.47}, {"from": 3, "to": 4, "distance": 10.57, "cost": 42.53, "time": 36.62}]}}
+{
+    "image": "logo.png",
+    "graph": {
+        "Node": [
+            {
+                "id": "0",
+                "label": "Node 0",
+                "xRatio": 0.6394,
+                "yRatio": 0.025
+            },
+            {
+                "id": "1",
+                "label": "Node 1",
+                "xRatio": 0.275,
+                "yRatio": 0.2232
+            },
+            {
+                "id": "2",
+                "label": "Node 2",
+                "xRatio": 0.7365,
+                "yRatio": 0.6767
+            },
+            {
+                "id": "3",
+                "label": "Node 3",
+                "xRatio": 0.8922,
+                "yRatio": 0.0869
+            },
+            {
+                "id": "4",
+                "label": "Node 4",
+                "xRatio": 0.4219,
+                "yRatio": 0.0298
+            },
+            {
+                "id": "6",
+                "label": "Node 6",
+                "xRatio": 0.5662535748331744,
+                "yRatio": 0.21163012392755004,
+                "color": "#fcba03"
+            },
+            {
+                "id": "7",
+                "label": "Node 7",
+                "xRatio": 0.6549094375595805,
+                "yRatio": 0.38703527168732127,
+                "color": "#fcba03"
+            }
+        ],
+        "Edges": [
+            {
+                "from": "0",
+                "to": "1",
+                "distance": 11.71,
+                "cost": 25.76,
+                "time": 2.57,
+                "color": "#000"
+            },
+            {
+                "from": "0",
+                "to": "2",
+                "distance": 10.74,
+                "cost": 32.84,
+                "time": 33.15,
+                "color": "#000"
+            },
+            {
+                "from": "0",
+                "to": "3",
+                "distance": 11.8,
+                "cost": 29.87,
+                "time": 48.76,
+                "color": "#000"
+            },
+            {
+                "from": "0",
+                "to": "4",
+                "distance": 1.32,
+                "cost": 40.49,
+                "time": 42.19,
+                "color": "#000"
+            },
+            {
+                "from": "1",
+                "to": "2",
+                "distance": 17.67,
+                "cost": 8.62,
+                "time": 57.48,
+                "color": "#000"
+            },
+            {
+                "from": "1",
+                "to": "3",
+                "distance": 17.49,
+                "cost": 5.54,
+                "time": 6.71,
+                "color": "#000"
+            },
+            {
+                "from": "1",
+                "to": "4",
+                "distance": 42.53,
+                "cost": 30.58,
+                "time": 48.62,
+                "color": "#000"
+            },
+            {
+                "from": "2",
+                "to": "3",
+                "distance": 36.76,
+                "cost": 27.28,
+                "time": 58.41,
+                "color": "#000"
+            },
+            {
+                "from": "2",
+                "to": "4",
+                "distance": 19.55,
+                "cost": 28.05,
+                "time": 49.93,
+                "color": "#000"
+            },
+            {
+                "from": "3",
+                "to": "4",
+                "distance": 31.31,
+                "cost": 43.22,
+                "time": 35.06,
+                "color": "#000"
+            },
+            {
+                "from": "6",
+                "to": "7",
+                "distance": 1,
+                "cost": 1,
+                "time": 1,
+                "color": "#FA4F40"
+            }
+        ]
+    }
+}

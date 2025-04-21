@@ -1,212 +1,341 @@
-import { useEffect, useState, useRef } from "react";
-import Graph from "graphology";
-import {
-  SigmaContainer,
-  useLoadGraph,
-  useRegisterEvents,
-  useSigma,
-} from "@react-sigma/core";import axios from "axios";
-import "@react-sigma/core/lib/style.css";
+import React, { useRef, useEffect, useState } from "react";
+import axios from "axios";
 
-const sigmaStyle = {
-  height: "500px",
-  width: "inherit",
-  backgroundColor: "#FF000000",
-};
-
-const graph = new Graph();
-
-const BackgroundImageRenderer = ({ backgroundImage }) => {
-  const sigma = useSigma();
+const GraphCanvas = ({ backgroundImageUrl, isAddingNode, mode, edges,nodes,setNodes,setEdges }) => {
+  const canvasRef = useRef(null);
   const containerRef = useRef(null);
-  const backgroundRef = useRef(null);
 
-  useEffect(() => {
-    if (!backgroundImage) return;
+  const [isLinking, setIsLinking] = useState(false);
+  const [linkStartNode, setLinkStartNode] = useState(null);
+  const [firstLinkStartNode, setfirstLinkStartNode] = useState(null);
+  const [backgroundImage, setBackgroundImage] = useState(null);
+  const [imageRatio, setImageRatio] = useState(1);
+  const [isEdgeFormVisible, setIsEdgeFormVisible] = useState(false);
+  const [newEdgeData, setNewEdgeData] = useState({
+    distance: "",
+    cost: "",
+    time: "",
+    color: "#000", // Couleur par défaut
+  });
 
-    const renderer = sigma.getRenderer();
-    const context = renderer.contexts.background;
-    const camera = renderer.getCamera();
-
-    const image = new Image();
-    image.src = backgroundImage;
-
-    image.onload = () => {
-      const drawBackground = () => {
-        const canvas = context.canvas;
-        const ctx = context;
-
-        const ratio = canvas.width / image.width;
-        const scaledHeight = image.height * ratio;
-
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(image, 0, 0, canvas.width, scaledHeight);
-      };
-
-      renderer.setSetting("renderBackground", drawBackground);
-      drawBackground();
+  // Charger l'image de fond
+    useEffect(() => {
+      console.log("Chargement de l'image de fond :", backgroundImageUrl);
+    if (!backgroundImageUrl) return;
+    const img = new Image();
+    img.src = backgroundImageUrl;
+    img.onload = () => {
+      setBackgroundImage(img);
+      setImageRatio(img.height / img.width);
     };
-  }, [backgroundImage, sigma]);
+  }, [backgroundImageUrl]);
 
-  return null;
-};
-
-
-
-// Composant pour charger le graphe depuis le backend
-export const LoadGraph = () => {
-  const loadGraph = useLoadGraph();
-
+  // Charger un graphe exemple
   useEffect(() => {
     const fetchGraph = async () => {
       try {
-        const response = await axios.get("http://10.116.130.43:8000/graph");
+        const response = await axios.get("http://192.168.1.141:8000/graph");
         const data = response.data;
-        const graph = new Graph();
 
-        data.Node.forEach((node, index) => {
-          graph.addNode(node.toString(), {
-            label: `Node ${node}`,
-            x: Math.cos(index * ((2 * Math.PI) / data.Node.length)) * 10,
-            y: Math.sin(index * ((2 * Math.PI) / data.Node.length)) * 10,
-            size: 10,
-            color: "#FA4F40",
-          });
-        });
+        const nodeObjects = data.Node.map((node) => ({
+          id: node.id.toString(),
+          label: `Node ${node.id}`,
+          xRatio: node.x_ratio,
+            yRatio: node.y_ratio,
+            color: node.color || "#858585", // Couleur par défaut
+        }));
 
-        data.Edges.forEach((edge) => {
-          const edgeId = `${edge.from}-${edge.to}`;
-          graph.addEdge(edge.from.toString(), edge.to.toString(), {
-            label: `d:${edge.distance}`,
-            size: 2,
-            color: "#888",
-          });
-        });
+        const edgeObjects = data.Edges.map((edge) => ({
+          from: edge.from.toString(),
+          to: edge.to.toString(),
+          distance: edge.distance,
+          cost: edge.cost,
+            time: edge.time,
+            color: edge.color || "#000", // Couleur par défaut
+        }));
 
-        loadGraph(graph);
-      } catch (error) {
-        console.error("Erreur lors du chargement du graphe :", error);
+        setNodes(nodeObjects);
+        setEdges(edgeObjects);
+      } catch (err) {
+        console.error("Erreur chargement du graphe", err);
       }
     };
 
     fetchGraph();
-  }, [loadGraph]);
+  }, []);
 
-  return null;
-};
-
-const ClickHandler = ({ edgeMode }) => {
-  const sigma = useSigma();
-  const graph = sigma.getGraph();
-  const containerRef = useRef();
-  const [nodeCount, setNodeCount] = useState(1000);
-  const [selectedNode, setSelectedNode] = useState(null);
-
+  // Dessiner
   useEffect(() => {
-    const handleNodeClick = (event) => {
-      const nodeId = event.node;
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
 
-      if (!edgeMode) return; // Ne rien faire si mode arête inactif
+    const resize = () => {
+      const parent = containerRef.current;
+      const width = parent.clientWidth;
+      const height = width * imageRatio;
 
-      if (selectedNode === null) {
-        setSelectedNode(nodeId);
-      } else {
-        if (
-          selectedNode !== nodeId &&
-          graph.hasNode(selectedNode) &&
-          graph.hasNode(nodeId)
-        ) {
-          const edgeId = `${selectedNode}-${nodeId}`;
-          if (
-            !graph.hasEdge(edgeId) &&
-            !graph.hasEdge(`${nodeId}-${selectedNode}`)
-          ) {
-            graph.addEdge(selectedNode, nodeId, {
-              label: `Edge`,
-              size: 2,
-              color: "#00FF00",
-            });
-          }
+      canvas.width = width;
+      canvas.height = height;
+
+      parent.style.height = `${height}px`;
+      draw();
+    };
+
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      if (backgroundImage) {
+        ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+      }
+
+      // Arêtes
+      edges.forEach((edge) => {
+        const from = nodes.find((n) => n.id === edge.from);
+        const to = nodes.find((n) => n.id === edge.to);
+        if (from && to) {
+          const x1 = from.xRatio * canvas.width;
+          const y1 = from.yRatio * canvas.height;
+          const x2 = to.xRatio * canvas.width;
+            const y2 = to.yRatio * canvas.height;
+            console.log("x1:", x1, "y1:", y1, "x2:", x2, "y2:", y2);
+
+          ctx.lineWidth = 3;
+          // Dessiner la ligne
+          ctx.beginPath();
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+          ctx.strokeStyle = edge.color || "#000"; // Couleur par défaut
+          ctx.stroke();
+
+          // Texte des pondérations
+          const midX = (x1 + x2) / 2;
+          const midY = (y1 + y2) / 2;
+          ctx.fillStyle = "black";
+          ctx.font = "bold 12px Arial";
+
+          const label = `d:${edge.distance} c:${edge.cost} t:${edge.time}`;
+          ctx.fillText(label, midX + 5, midY - 5);
         }
-        setSelectedNode(null); // reset
-      }
+      });
+
+      // Sommets
+      nodes.forEach((node) => {
+        const x = node.xRatio * canvas.width;
+        const y = node.yRatio * canvas.height;
+        ctx.beginPath();
+          ctx.arc(x, y, 25, 0, 2 * Math.PI);
+          
+        ctx.fillStyle = node.color || "#858585";
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = "white";
+        ctx.fillText(node.label, x - 20, y + 5);
+      });
     };
 
-    const handleRightClick = (event) => {
-      event.preventSigmaDefault();
-      const nodeId = event.node;
-      if (graph.hasNode(nodeId)) {
-        graph.dropNode(nodeId);
-        setSelectedNode(null);
-      }
-    };
+    resize();
 
-    sigma.on("clickNode", handleNodeClick);
-    sigma.on("rightClickNode", handleRightClick);
+    window.addEventListener("resize", resize);
+    return () => window.removeEventListener("resize", resize);
+  }, [nodes, edges, backgroundImage]);
 
-    return () => {
-      sigma.off("clickNode", handleNodeClick);
-      sigma.off("rightClickNode", handleRightClick);
-    };
-  }, [sigma, graph, edgeMode, selectedNode]);
+    const handleCanvasClick = (e) => {
+        const canvas = canvasRef.current;
+        const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const xRatio = x / canvas.width;
+            const yRatio = y / canvas.height;
 
-  const handleClick = (e) => {
-    const rect = containerRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const coord = sigma.viewportToGraph({ x, y });
+        if (mode === "supprimerArrete") {
+            console.log("clic arette");
+            // Recherche de l'arête la plus proche du clic
+            const clickedEdge = edges.find((edge) => {
+                const from = nodes.find((n) => n.id === edge.from);
+                const to = nodes.find((n) => n.id === edge.to);
+                if (from && to) {
+                    const x1 = from.xRatio * canvas.width;
+                    const y1 = from.yRatio * canvas.height;
+                    const x2 = to.xRatio * canvas.width;
+                    const y2 = to.yRatio * canvas.height;
 
-    const newId = `n${nodeCount}`;
-    graph.addNode(newId, {
-      label: `Node ${newId}`,
-      x: coord.x,
-      y: coord.y,
-      size: 10,
-      color: "#00AAFF",
+                    // Calculer la distance du clic à l'arête
+                    const distance =
+                        Math.abs((y2 - y1) * x - (x2 - x1) * y + x2 * y1 - y2 * x1) /
+                        Math.sqrt(Math.pow(y2 - y1, 2) + Math.pow(x2 - x1, 2));
+                    return distance < 10; // Tolérance de 10 pixels pour détecter l'arête
+                }
+                return false;
+            });
+
+            if (clickedEdge) {
+                // Supprimer l'arête
+                setEdges((prevEdges) =>
+                    prevEdges.filter((edge) => edge !== clickedEdge)
+                );
+            }
+        } else if (mode === "supprimerSommet") {
+            console.log("clic sommet");
+            // Recherche du sommet le plus proche du clic
+            const clickedNode = nodes.find((node) => {
+                const nodeX = node.xRatio * canvas.width;
+                const nodeY = node.yRatio * canvas.height;
+                return Math.hypot(nodeX - x, nodeY - y) < 30; // Rayon augmenté pour détecter le clic sur un sommet
+            });
+
+            if (clickedNode) {
+                // Supprimer le sommet
+                setNodes((prevNodes) =>
+                    prevNodes.filter((node) => node !== clickedNode)
+                );
+                // Supprimer les arêtes associées
+                setEdges((prevEdges) =>
+                    prevEdges.filter(
+                        (edge) =>
+                            edge.from !== clickedNode.id && edge.to !== clickedNode.id
+                    )
+                );
+            }
+          
+        }
+
+
+        else if (mode === "sommet") {
+          
+            console.log("clic sommet");
+          
+const newId = (nodes.length + 1).toString();
+setNodes((prev) => [
+  ...prev,
+  { id: newId, label: `Node ${newId}`, xRatio, yRatio, color: "#858585" },
+]);
+    console.log("Nouveau sommet ajouté :", nodes);
+        }
+          
+            
+            
+  if (mode === "arrette") {
+    console.log("clic arrete");
+
+    const clickedNode = nodes.find((node) => {
+      const nodeX = node.xRatio * canvas.width;
+      const nodeY = node.yRatio * canvas.height;
+      return Math.hypot(nodeX - x, nodeY - y) < 15;
     });
-
-    setNodeCount((prev) => prev + 1);
-  };
-
-  return (
-    <div
-      ref={containerRef}
-      onClick={handleClick}
-      className="absolute top-0 left-0 w-full h-full z-30 cursor-crosshair"
-      style={{ backgroundColor: "transparent" }}
-    />
-  );
+    console.log("clickedNode", clickedNode);
+      
+      if (linkStartNode && clickedNode && linkStartNode.id !== clickedNode.id) {
+        console.log("ouaip et", clickedNode.id, linkStartNode.id);
+      // S'il y a déjà un noeud de départ, créer une arête
+      setIsEdgeFormVisible(true);
+      setLinkStartNode(clickedNode);
+      setNewEdgeData({ ...newEdgeData, toNodeId: clickedNode.id });
+    } else {
+      // Sinon, initialiser le noeud de départ
+      setLinkStartNode(clickedNode);
+      setfirstLinkStartNode(clickedNode);
+    }
+  }
 };
 
+          const handleAddEdge = () => {
+            const { distance, cost, time, color } = newEdgeData;
 
-const DisplayGraph = ({ backgroundImage }) => {
-  const [edgeMode, setEdgeMode] = useState(false);
+            if (!distance || !cost || !time) {
+              alert("Veuillez remplir tous les champs.");
+              return;
+            }
+
+            setEdges((prev) => [
+              ...prev,
+              {
+                from: firstLinkStartNode.id,
+                to: newEdgeData.toNodeId,
+                distance: parseFloat(distance),
+                cost: parseFloat(cost),
+                time: parseFloat(time),
+                color: color || "#000", // Couleur par défaut
+              },
+            ]);
+              console.log(edges)
+            setNewEdgeData({ distance: "", cost: "", time: "", color: "" });
+            setIsEdgeFormVisible(false);
+            setLinkStartNode(null);
+          };
+
+
+
+
 
   return (
-    <div className="z-20 absolute w-full h-full">
-      <div className="absolute top-2 left-2 z-40">
-        <button
-          className={`px-4 py-2 rounded ${
-            edgeMode ? "bg-red-500 text-white" : "bg-gray-300 text-black"
-          }`}
-          onClick={() => setEdgeMode((prev) => !prev)}
-        >
-          {edgeMode ? "Quitter mode arête" : "Activer mode arête"}
-        </button>
-      </div>
+    <div ref={containerRef} className="relative w-full h-full">
+      <canvas
+        ref={canvasRef}
+        className="absolute top-0 left-0 w-full h-full"
+        onClick={handleCanvasClick}
+      />
 
-      <SigmaContainer
-        style={sigmaStyle}
-        settings={{
-          renderEdgeLabels: true,
-        }}
-      >
-        <BackgroundImageRenderer backgroundImage={backgroundImage} />
-        <LoadGraph />
-        <ClickHandler edgeMode={edgeMode} />
-      </SigmaContainer>
+      {isEdgeFormVisible && (
+        <div className="absolute top-0 left-0 bg-white p-4 border rounded shadow-md">
+          <h3 className="font-semibold">Ajouter une arête</h3>
+          <label>
+            Distance:
+            <input
+              type="number"
+              value={newEdgeData.distance}
+              onChange={(e) =>
+                setNewEdgeData({ ...newEdgeData, distance: e.target.value })
+              }
+              className="border p-1 mb-2"
+            />
+          </label>
+          <br />
+          <label>
+            Coût:
+            <input
+              type="number"
+              value={newEdgeData.cost}
+              onChange={(e) =>
+                setNewEdgeData({ ...newEdgeData, cost: e.target.value })
+              }
+              className="border p-1 mb-2"
+            />
+          </label>
+          <br />
+          <label>
+            Temps:
+            <input
+              type="number"
+              value={newEdgeData.time}
+              onChange={(e) =>
+                setNewEdgeData({ ...newEdgeData, time: e.target.value })
+              }
+              className="border p-1 mb-2"
+            />
+          </label>
+          <br />
+          <label>
+            couleur(hexadecimal):
+            <input
+              type="text"
+              value={newEdgeData.color}
+              onChange={(e) =>
+                setNewEdgeData({ ...newEdgeData, color: e.target.value })
+              }
+              className="border p-1 mb-2"
+            />
+          </label>
+          <br />
+          <button
+            onClick={handleAddEdge}
+            className="bg-blue-500 text-white p-2 rounded"
+          >
+            Ajouter l'arête
+          </button>
+        </div>
+      )}
     </div>
   );
 };
 
-export default DisplayGraph;
+export default GraphCanvas;

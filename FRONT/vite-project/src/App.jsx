@@ -6,20 +6,24 @@ import DisplayGraph from "@components/Graph.jsx"; // Import the Graph component
 
 
 const E5x = () => {
+    const [nodes, setNodes] = useState([]);
+    const [edges, setEdges] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const fileInputRef = useRef(null); // Reference to the file input element
-   const [showSidebar, setShowSidebar] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(false);
+  const [imageRatio, setImageRatio] = useState(0.8625); // par défaut 16/9
 
-const [configImageUrl, setConfigImageUrl] = useState(null);
+  const [configImageUrl, setConfigImageUrl] = useState(null);
 
   const [configs, setConfigs] = useState([]);
   const [selectedConfig, setSelectedConfig] = useState(null);
+  const [mode, setMode] = useState(null); // null = aucun mode, "sommet" ou "arrette"
 
   useEffect(() => {
     // Récupérer les configurations depuis le backend
     const fetchConfigs = async () => {
       try {
-        const res = await axios.get("http://10.116.130.43:8000/list_configs");
+        const res = await axios.get("http://192.168.1.141:8000/list_configs");
         setConfigs(res.data);
       } catch (error) {
         console.error("Erreur lors du chargement des configurations :", error);
@@ -37,34 +41,66 @@ const [configImageUrl, setConfigImageUrl] = useState(null);
     loadConfig(configName);
   };
 
-
-  const sommet = () => {
-    console.log("Ajouter un sommet");
-    // Logique pour ajouter un sommet
+  // Fonction pour activer le mode "ajout de sommet"
+  const activerAjoutSommet = () => {
+        if (mode === "sommet") {
+      setMode(null); // Désactiver le mode si déjà actif
+    }
+    else {
+  setMode("sommet");
+}
+    console.log("Mode ajout de sommet activé");
   };
-  const arrette = () => {
-    console.log("Ajouter une arrete");
-    // Logique pour ajouter une arrete
+
+  // Fonction pour activer le mode "ajout d'arête"
+  const activerAjoutArrete = () => {
+    if (mode === "arrette") {
+      setMode(null); // Désactiver le mode si déjà actif
+    }
+    else {
+      setMode("arrette");
+      }
+    console.log("Mode ajout d'arête activé");
+  };
+
+  // Fonction pour activer le mode "suppression de sommet"
+  const activerSuppressionSommet = () => {
+    if (mode === "supprimerSommet") {
+      setMode(null); // Désactiver le mode si déjà actif
+    }
+    // Sinon, on active le mode de suppression de sommet
+    else {
+      setMode("supprimerSommet");
+    }
+    console.log("Mode suppression de sommet activé");
+  };
+
+  // Fonction pour activer le mode "suppression d'arête"
+  const activerSuppressionArrete = () => {
+        if (mode === "supprimerArrete") {
+          setMode(null); // Désactiver le mode si déjà actif
+        } else {
+          setMode("supprimerArrete");
+        }
+    console.log("Mode suppression d'arête activé");
   };
 
   const loadConfig = async (configName) => {
     try {
-      const res = await axios.get(`http://10.116.130.43:8000/load_config/${configName}`);
+      const res = await axios.get(
+        `http://192.168.1.141:8000/load_config/${configName}`
+      );
       console.log("Configuration chargée :", res.data);
       // Traiter la configuration reçue ici
     } catch (error) {
       console.error("Erreur lors du chargement de la configuration :", error);
     }
   };
-  
+
   const updateFile = (e) => {
     setSelectedFiles(e.target.files);
     console.log(e.target.files);
   };
-
-
-
-
 
   const sendFiles = async () => {
     if ("vibrate" in navigator) {
@@ -75,9 +111,10 @@ const [configImageUrl, setConfigImageUrl] = useState(null);
       Array.from(selectedFiles).forEach((file) => {
         formData.append("files", file);
       });
-
+      formData.append("graph", JSON.stringify({ Node: nodes, Edges: edges }));
+      console.log("FormData:", formData);
       const res = await axios.post(
-        "http://10.116.130.43:8000/upload_image",
+        "http://192.168.1.141:8000/upload_image",
         formData,
         {
           headers: {
@@ -96,17 +133,24 @@ const [configImageUrl, setConfigImageUrl] = useState(null);
   };
 
   return (
-    <div className="relative">
+    <div className="relative ">
       <Sidebar
         showSidebar={showSidebar}
         onLoadConfig={(name, data) => {
           setSelectedConfig(name);
           console.log("Configuration sélectionnée :", name);
+          console.log("Données de la configuration :", data);
           // ✅ met à jour le fond de carte ici
           if (data.image) {
-            const imageUrl = `http://10.116.130.43:8000/image/${data.image}`;
+            const imageUrl = `http://192.168.1.141:8000/image/${data.image}`;
             setConfigImageUrl(imageUrl);
           }
+          if (data.graph) {
+            
+            setNodes(data.graph.Node || []);
+            setEdges(data.graph.Edges || []);
+          }
+
           // ✅ met à jour les points, arêtes, etc. ici
           // Exemple : setNodes(data.nodes); setEdges(data.edges); (à adapter à ton code)
         }}
@@ -119,19 +163,48 @@ const [configImageUrl, setConfigImageUrl] = useState(null);
       </button>
 
       <div className="flex flex-col">
-        <button
-          className="bg-black rounded-xl p-4 m-2 inline-block   px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white  transition duration-150 ease-in-out   focus:bg-slate-500 focus:shadow-black focus:outline-none focus:ring-0 active:bg-slate-600 active:shadow-black motion-reduce:transition-none dark:shadow-black/30"
-          onClick={sommet}
+        <div className="grid grid-cols-2 gap-4">
+          <button
+            className={`${
+              mode === "sommet" ? "bg-green-500" : "bg-green-400"
+            } rounded-xl p-4 m-2 inline-block px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:shadow-black focus:outline-none focus:ring-0 cursor-pointer  active:shadow-black motion-reduce:transition-none dark:shadow-black/30`}
+            onClick={activerAjoutSommet}
+          >
+            Placer les sommets du graphe / ville à visiter
+          </button>
+
+          <button
+            className={`${
+              mode === "supprimerSommet" ? "bg-red-500" : "bg-red-400"
+            } rounded-xl p-4 m-2 inline-block px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:shadow-black focus:outline-none focus:ring-0 cursor-pointer  active:shadow-black motion-reduce:transition-none dark:shadow-black/30`}
+            onClick={activerSuppressionSommet}
+          >
+            Supprimer des sommets
+          </button>
+
+          <button
+            className={`${
+              mode === "arrette" ? "bg-blue-500" : "bg-blue-400"
+            } rounded-xl p-4 m-2 inline-block px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:shadow-black focus:outline-none focus:ring-0 cursor-pointer  active:shadow-black motion-reduce:transition-none dark:shadow-black/30`}
+            onClick={activerAjoutArrete}
+          >
+            Créer une arête / relier deux villes par une route
+          </button>
+
+          <button
+            className={`${
+              mode === "supprimerArrete" ? "bg-orange-500" : "bg-orange-400"
+            } rounded-xl p-4 m-2 inline-block px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:shadow-black focus:outline-none focus:ring-0 cursor-pointer  active:shadow-black motion-reduce:transition-none dark:shadow-black/30`}
+            onClick={activerSuppressionArrete}
+          >
+            Supprimer une arête
+          </button>
+        </div>
+
+        <div
+          className="relative border border-slate-400 rounded-xl overflow-hidden shadow-lg w-full"
+          style={{ height: `${imageRatio * 100}vw` }} // ou utilise un wrapper responsive
         >
-          placer les sommets du graphe/ ville a visiter
-        </button>{" "}
-        <button
-          className="bg-blue-400 rounded-xl p-4 m-2 inline-block   px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white  transition duration-150 ease-in-out   focus:bg-slate-500 focus:shadow-black focus:outline-none focus:ring-0 active:bg-slate-600 active:shadow-black motion-reduce:transition-none dark:shadow-black/30"
-          onClick={arrette}
-        >
-          creéer une arette/relier deux ville par une route
-        </button>
-        <div className="h-[500px] relative border border-slate-400 rounded-xl overflow-hidden shadow-lg">
           {(selectedFiles.length > 0 || configImageUrl) && (
             <img
               className="absolute inset-0 w-full h-full object-contain z-0"
@@ -145,11 +218,16 @@ const [configImageUrl, setConfigImageUrl] = useState(null);
           )}
           <div className="absolute inset-0 z-10">
             <DisplayGraph
+              mode={mode} // On passe le mode directement
               backgroundImage={
                 selectedFiles.length > 0
                   ? URL.createObjectURL(selectedFiles[0])
                   : configImageUrl
               }
+              edges={edges}
+              nodes={nodes}
+              setEdges={setEdges}
+              setNodes={setNodes}
             />
           </div>
         </div>
