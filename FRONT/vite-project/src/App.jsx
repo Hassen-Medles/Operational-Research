@@ -131,7 +131,7 @@ const [configImageUrl, setConfigImageUrl] = useState(null);
         >
           creéer une arette/relier deux ville par une route
         </button>
-        <div className="h-96 relative border border-slate-400 rounded-xl overflow-hidden shadow-lg">
+        <div className="h-[500px] relative border border-slate-400 rounded-xl overflow-hidden shadow-lg">
           {(selectedFiles.length > 0 || configImageUrl) && (
             <img
               className="absolute inset-0 w-full h-full object-contain z-0"
@@ -144,7 +144,13 @@ const [configImageUrl, setConfigImageUrl] = useState(null);
             />
           )}
           <div className="absolute inset-0 z-10">
-            <DisplayGraph />
+            <DisplayGraph
+              backgroundImage={
+                selectedFiles.length > 0
+                  ? URL.createObjectURL(selectedFiles[0])
+                  : configImageUrl
+              }
+            />
           </div>
         </div>
         <div className="z-30 pt-14 m-auto">
