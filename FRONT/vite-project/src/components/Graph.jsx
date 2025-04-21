@@ -50,8 +50,8 @@ const GraphCanvas = ({ backgroundImageUrl, isAddingNode, mode, edges,nodes,setNo
           to: edge.to.toString(),
           distance: edge.distance,
           cost: edge.cost,
-            time: edge.time,
-            color: edge.color || "#000", // Couleur par défaut
+          time: edge.time,
+          color: edge.color || "#371ac7", // Couleur par défaut
         }));
 
         setNodes(nodeObjects);
@@ -104,7 +104,7 @@ const GraphCanvas = ({ backgroundImageUrl, isAddingNode, mode, edges,nodes,setNo
           ctx.beginPath();
           ctx.moveTo(x1, y1);
           ctx.lineTo(x2, y2);
-          ctx.strokeStyle = edge.color || "#000"; // Couleur par défaut
+          ctx.strokeStyle = edge.color || "#371ac7"; // Couleur par défaut
           ctx.stroke();
 
           // Texte des pondérations
@@ -125,7 +125,8 @@ const GraphCanvas = ({ backgroundImageUrl, isAddingNode, mode, edges,nodes,setNo
         ctx.beginPath();
           ctx.arc(x, y, 25, 0, 2 * Math.PI);
           
-        ctx.fillStyle = node.color || "#858585";
+          ctx.fillStyle = node.color || "#000";
+          ctx.strokeStyle = "#1ac992";
         ctx.fill();
         ctx.stroke();
         ctx.fillStyle = "white";
@@ -207,7 +208,7 @@ const GraphCanvas = ({ backgroundImageUrl, isAddingNode, mode, edges,nodes,setNo
 const newId = (nodes.length + 1).toString();
 setNodes((prev) => [
   ...prev,
-  { id: newId, label: `Node ${newId}`, xRatio, yRatio, color: "#858585" },
+  { id: newId, label: `Node ${newId}`, xRatio, yRatio, color: "#000" },
 ]);
     console.log("Nouveau sommet ajouté :", nodes);
         }
@@ -241,20 +242,17 @@ setNodes((prev) => [
           const handleAddEdge = () => {
             const { distance, cost, time, color } = newEdgeData;
 
-            if (!distance || !cost || !time) {
-              alert("Veuillez remplir tous les champs.");
-              return;
-            }
+
 
             setEdges((prev) => [
               ...prev,
               {
                 from: firstLinkStartNode.id,
                 to: newEdgeData.toNodeId,
-                distance: parseFloat(distance),
-                cost: parseFloat(cost),
-                time: parseFloat(time),
-                color: color || "#000", // Couleur par défaut
+                distance: parseFloat(distance) || 1,
+                cost: parseFloat(cost) || 1,
+                time: parseFloat(time) || 1,
+                color: color || "#7d1179", // Couleur par défaut
               },
             ]);
               console.log(edges)
