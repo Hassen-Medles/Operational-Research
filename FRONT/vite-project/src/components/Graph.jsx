@@ -34,7 +34,7 @@ const GraphCanvas = ({ backgroundImageUrl, isAddingNode, mode, edges,nodes,setNo
   useEffect(() => {
     const fetchGraph = async () => {
       try {
-        const response = await axios.get("http://192.168.1.141:8000/graph");
+        const response = await axios.get("http://10.116.130.43:8000/graph");
         const data = response.data;
 
         const nodeObjects = data.Node.map((node) => ({

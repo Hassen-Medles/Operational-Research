@@ -6,7 +6,7 @@ const Sidebar = ({ onLoadConfig, showSidebar }) => {
 
 
   const fetchConfigs = async () => {
-    const res = await axios.get("http://192.168.1.141:8000/list_configs");
+    const res = await axios.get("http://10.116.130.43:8000/list_configs");
     setConfigs(res.data);
   };
 
@@ -17,7 +17,7 @@ const Sidebar = ({ onLoadConfig, showSidebar }) => {
   
   const handleLoad = async (name) => {
     const res = await axios.get(
-      `http://192.168.1.141:8000/load_config/${name}`
+      `http://10.116.130.43:8000/load_config/${name}`
     );
     onLoadConfig(name, res.data);
   };

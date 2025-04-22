@@ -5,6 +5,20 @@ import Sidebar from "@components/Sidebar"; // nouveau composant
 import DisplayGraph from "@components/Graph.jsx"; // Import the Graph component
 
 
+
+import {
+  fetchConfigs,
+  loadConfig,
+  getImageUrl,
+  uploadGraph,
+  uploadFiles,
+  uploadImage,
+} from "@utils/api";
+import { toggleMode } from "@utils/graphModes";
+import { handleFileUpdate } from "@utils/fileUtils";
+
+
+
 const E5x = () => {
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
@@ -23,7 +37,7 @@ const E5x = () => {
     // Récupérer les configurations depuis le backend
     const fetchConfigs = async () => {
       try {
-        const res = await axios.get("http://192.168.1.141:8000/list_configs");
+        const res = await axios.get("http://10.116.130.43:8000/list_configs");
         setConfigs(res.data);
       } catch (error) {
         console.error("Erreur lors du chargement des configurations :", error);
@@ -34,68 +48,8 @@ const E5x = () => {
   }, []);
 
   // Fonction pour gérer la sélection d'une configuration
-  const handleConfigSelect = (configName) => {
-    setSelectedConfig(configName);
-    console.log("Configuration sélectionnée :", configName);
-    // Tu peux appeler la fonction pour charger la configuration à partir du backend
-    loadConfig(configName);
-  };
+  
 
-  // Fonction pour activer le mode "ajout de sommet"
-  const activerAjoutSommet = () => {
-        if (mode === "sommet") {
-      setMode(null); // Désactiver le mode si déjà actif
-    }
-    else {
-  setMode("sommet");
-}
-    console.log("Mode ajout de sommet activé");
-  };
-
-  // Fonction pour activer le mode "ajout d'arête"
-  const activerAjoutArrete = () => {
-    if (mode === "arrette") {
-      setMode(null); // Désactiver le mode si déjà actif
-    }
-    else {
-      setMode("arrette");
-      }
-    console.log("Mode ajout d'arête activé");
-  };
-
-  // Fonction pour activer le mode "suppression de sommet"
-  const activerSuppressionSommet = () => {
-    if (mode === "supprimerSommet") {
-      setMode(null); // Désactiver le mode si déjà actif
-    }
-    // Sinon, on active le mode de suppression de sommet
-    else {
-      setMode("supprimerSommet");
-    }
-    console.log("Mode suppression de sommet activé");
-  };
-
-  // Fonction pour activer le mode "suppression d'arête"
-  const activerSuppressionArrete = () => {
-        if (mode === "supprimerArrete") {
-          setMode(null); // Désactiver le mode si déjà actif
-        } else {
-          setMode("supprimerArrete");
-        }
-    console.log("Mode suppression d'arête activé");
-  };
-
-  const loadConfig = async (configName) => {
-    try {
-      const res = await axios.get(
-        `http://192.168.1.141:8000/load_config/${configName}`
-      );
-      console.log("Configuration chargée :", res.data);
-      // Traiter la configuration reçue ici
-    } catch (error) {
-      console.error("Erreur lors du chargement de la configuration :", error);
-    }
-  };
 
   const updateFile = (e) => {
     setSelectedFiles(e.target.files);
@@ -114,7 +68,7 @@ const E5x = () => {
       formData.append("graph", JSON.stringify({ Node: nodes, Edges: edges }));
       console.log("FormData:", formData);
       const res = await axios.post(
-        "http://192.168.1.141:8000/upload_image",
+        "http://10.116.130.43:8000/upload_image",
         formData,
         {
           headers: {
@@ -146,7 +100,6 @@ const E5x = () => {
             setConfigImageUrl(imageUrl);
           }
           if (data.graph) {
-            
             setNodes(data.graph.Node || []);
             setEdges(data.graph.Edges || []);
           }
@@ -168,7 +121,7 @@ const E5x = () => {
             className={`${
               mode === "sommet" ? "bg-green-500" : "bg-green-400"
             } rounded-xl p-4 m-2 inline-block px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:shadow-black focus:outline-none focus:ring-0 cursor-pointer  active:shadow-black motion-reduce:transition-none dark:shadow-black/30`}
-            onClick={activerAjoutSommet}
+            onClick={() => setMode("supprimerSommet")}
           >
             Placer les sommets du graphe / ville à visiter
           </button>
@@ -177,7 +130,7 @@ const E5x = () => {
             className={`${
               mode === "supprimerSommet" ? "bg-red-500" : "bg-red-400"
             } rounded-xl p-4 m-2 inline-block px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:shadow-black focus:outline-none focus:ring-0 cursor-pointer  active:shadow-black motion-reduce:transition-none dark:shadow-black/30`}
-            onClick={activerSuppressionSommet}
+            onClick={() => setMode("supprimerSommet")}
           >
             Supprimer des sommets
           </button>
@@ -186,7 +139,7 @@ const E5x = () => {
             className={`${
               mode === "arrette" ? "bg-blue-500" : "bg-blue-400"
             } rounded-xl p-4 m-2 inline-block px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:shadow-black focus:outline-none focus:ring-0 cursor-pointer  active:shadow-black motion-reduce:transition-none dark:shadow-black/30`}
-            onClick={activerAjoutArrete}
+            onClick={() => setMode("arrette")}
           >
             Créer une arête / relier deux villes par une route
           </button>
@@ -195,7 +148,7 @@ const E5x = () => {
             className={`${
               mode === "supprimerArrete" ? "bg-orange-500" : "bg-orange-400"
             } rounded-xl p-4 m-2 inline-block px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:shadow-black focus:outline-none focus:ring-0 cursor-pointer  active:shadow-black motion-reduce:transition-none dark:shadow-black/30`}
-            onClick={activerSuppressionArrete}
+            onClick={() => setMode("supprimerArrete")}
           >
             Supprimer une arête
           </button>
@@ -244,16 +197,25 @@ const E5x = () => {
             className="plus-button"
             onClick={() => fileInputRef.current.click()} // Trigger the file input click
           >
-            <p className=" text-2xl">
+            <p className="z-30 bg-yellow-800 rounded-xl p-4 m-2 inline-block   px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white  transition duration-150 ease-in-out   focus:bg-slate-500 focus:shadow-black focus:outline-none focus:ring-0 active:bg-slate-600 active:shadow-black motion-reduce:transition-none dark:shadow-black/30">
               cliquez pour selectionner le fond de carte
             </p>
           </button>
         </div>
         <button
           className="z-30 bg-slate-400 rounded-xl p-4 m-2 inline-block   px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white  transition duration-150 ease-in-out   focus:bg-slate-500 focus:shadow-black focus:outline-none focus:ring-0 active:bg-slate-600 active:shadow-black motion-reduce:transition-none dark:shadow-black/30"
-          onClick={sendFiles}
+          onClick={uploadImage(selectedConfig, selectedFiles)}
+
+
         >
-          Envoyer les fichiers
+          Envoyer l'image
+        </button>
+
+        <button
+          className="z-30 bg-slate-400 rounded-xl p-4 m-2 inline-block   px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white  transition duration-150 ease-in-out   focus:bg-slate-500 focus:shadow-black focus:outline-none focus:ring-0 active:bg-slate-600 active:shadow-black motion-reduce:transition-none dark:shadow-black/30"
+          onClick={uploadGraph(selectedConfig, nodes, edges)}
+        >
+          Envoyer le graphe
         </button>
       </div>
     </div>

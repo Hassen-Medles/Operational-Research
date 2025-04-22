@@ -1,0 +1,124 @@
+{
+    "image": "image-11.png",
+    "graph": {
+        "Node": [
+            {
+                "id": "0",
+                "label": "Node 0",
+                "xRatio": 0.6394,
+                "yRatio": 0.025,
+                "color": "#858585"
+            },
+            {
+                "id": "1",
+                "label": "Node 1",
+                "xRatio": 0.275,
+                "yRatio": 0.2232,
+                "color": "#858585"
+            },
+            {
+                "id": "2",
+                "label": "Node 2",
+                "xRatio": 0.7365,
+                "yRatio": 0.6767,
+                "color": "#858585"
+            },
+            {
+                "id": "3",
+                "label": "Node 3",
+                "xRatio": 0.8922,
+                "yRatio": 0.0869,
+                "color": "#858585"
+            },
+            {
+                "id": "4",
+                "label": "Node 4",
+                "xRatio": 0.4219,
+                "yRatio": 0.0298,
+                "color": "#858585"
+            }
+        ],
+        "Edges": [
+            {
+                "from": "0",
+                "to": "1",
+                "distance": 11.71,
+                "cost": 25.76,
+                "time": 2.57,
+                "color": "#371ac7"
+            },
+            {
+                "from": "0",
+                "to": "2",
+                "distance": 10.74,
+                "cost": 32.84,
+                "time": 33.15,
+                "color": "#371ac7"
+            },
+            {
+                "from": "0",
+                "to": "3",
+                "distance": 11.8,
+                "cost": 29.87,
+                "time": 48.76,
+                "color": "#371ac7"
+            },
+            {
+                "from": "0",
+                "to": "4",
+                "distance": 1.32,
+                "cost": 40.49,
+                "time": 42.19,
+                "color": "#371ac7"
+            },
+            {
+                "from": "1",
+                "to": "2",
+                "distance": 17.67,
+                "cost": 8.62,
+                "time": 57.48,
+                "color": "#371ac7"
+            },
+            {
+                "from": "1",
+                "to": "3",
+                "distance": 17.49,
+                "cost": 5.54,
+                "time": 6.71,
+                "color": "#371ac7"
+            },
+            {
+                "from": "1",
+                "to": "4",
+                "distance": 42.53,
+                "cost": 30.58,
+                "time": 48.62,
+                "color": "#371ac7"
+            },
+            {
+                "from": "2",
+                "to": "3",
+                "distance": 36.76,
+                "cost": 27.28,
+                "time": 58.41,
+                "color": "#371ac7"
+            },
+            {
+                "from": "2",
+                "to": "4",
+                "distance": 19.55,
+                "cost": 28.05,
+                "time": 49.93,
+                "color": "#371ac7"
+            },
+            {
+                "from": "3",
+                "to": "4",
+                "distance": 31.31,
+                "cost": 43.22,
+                "time": 35.06,
+                "color": "#371ac7"
+            }
+        ]
+    }
+}
