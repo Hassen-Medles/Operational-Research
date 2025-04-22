@@ -11,7 +11,6 @@ import {
   loadConfig,
   getImageUrl,
   uploadGraph,
-  uploadFiles,
   uploadImage,
 } from "@utils/api";
 import { toggleMode } from "@utils/graphModes";
@@ -20,72 +19,31 @@ import { handleFileUpdate } from "@utils/fileUtils";
 
 
 const E5x = () => {
-    const [nodes, setNodes] = useState([]);
-    const [edges, setEdges] = useState([]);
-  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [nodes, setNodes] = useState([]);
+  const [edges, setEdges] = useState([]);
+  const [selectedFile, setSelectedFile] = useState(null);
   const fileInputRef = useRef(null); // Reference to the file input element
   const [showSidebar, setShowSidebar] = useState(false);
   const [imageRatio, setImageRatio] = useState(0.8625); // par défaut 16/9
 
   const [configImageUrl, setConfigImageUrl] = useState(null);
 
-  const [configs, setConfigs] = useState([]);
-  const [selectedConfig, setSelectedConfig] = useState(null);
+  const [selectedConfig, setSelectedConfig] = useState("default");
   const [mode, setMode] = useState(null); // null = aucun mode, "sommet" ou "arrette"
 
-  useEffect(() => {
-    // Récupérer les configurations depuis le backend
-    const fetchConfigs = async () => {
-      try {
-        const res = await axios.get("http://10.116.130.43:8000/list_configs");
-        setConfigs(res.data);
-      } catch (error) {
-        console.error("Erreur lors du chargement des configurations :", error);
-      }
-    };
-
-    fetchConfigs();
-  }, []);
-
-  // Fonction pour gérer la sélection d'une configuration
-  
+  const [backgroundImageUrl, setBackgroundImageUrl] = useState(null);
 
 
   const updateFile = (e) => {
-    setSelectedFiles(e.target.files);
-    console.log(e.target.files);
+    const file = e.target.files[0] || null;
+    setSelectedFile(file);
+    console.log("Image sélectionnée raw", file);
+    console.log("Image sélectionnée : envoyee", selectedFile);
   };
 
-  const sendFiles = async () => {
-    if ("vibrate" in navigator) {
-      navigator.vibrate([100]);
-    }
-    try {
-      const formData = new FormData();
-      Array.from(selectedFiles).forEach((file) => {
-        formData.append("files", file);
-      });
-      formData.append("graph", JSON.stringify({ Node: nodes, Edges: edges }));
-      console.log("FormData:", formData);
-      const res = await axios.post(
-        "http://10.116.130.43:8000/upload_image",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
 
-      if (res) {
-        console.log(res);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-    setSelectedFiles([]);
-  };
 
+  
   return (
     <div className="relative ">
       <Sidebar
@@ -94,20 +52,24 @@ const E5x = () => {
           setSelectedConfig(name);
           console.log("Configuration sélectionnée :", name);
           console.log("Données de la configuration :", data);
+          // Assurez-vous que l'image est dans les données de la configuration
           // ✅ met à jour le fond de carte ici
-          if (data.image) {
-            const imageUrl = `http://192.168.1.141:8000/image/${data.image}`;
-            setConfigImageUrl(imageUrl);
-          }
-          if (data.graph) {
-            setNodes(data.graph.Node || []);
-            setEdges(data.graph.Edges || []);
-          }
 
           // ✅ met à jour les points, arêtes, etc. ici
           // Exemple : setNodes(data.nodes); setEdges(data.edges); (à adapter à ton code)
         }}
+        setConfigImageUrl={setConfigImageUrl} // Passer la fonction pour mettre à jour l'URL de l'image
+        nodes={nodes} // Passer les nœuds
+        setNodes={setNodes} // Passer la fonction pour mettre à jour les nœuds
+        edges={edges} // Passer les arêtes
+        setEdges={setEdges} // Passer la fonction pour mettre à jour les arêtes
+        selectedFile={selectedFile} // Passer les fichiers sélectionnés
+        setSelectedFile={setSelectedFile} // Passer la fonction pour mettre à jour les fichiers sélectionnés
       />
+
+
+
+      
       <button
         className="fixed top-4 left-4 z-50 bg-slate-600 text-white px-4 py-2 rounded"
         onClick={() => setShowSidebar((s) => !s)}
@@ -121,7 +83,7 @@ const E5x = () => {
             className={`${
               mode === "sommet" ? "bg-green-500" : "bg-green-400"
             } rounded-xl p-4 m-2 inline-block px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:shadow-black focus:outline-none focus:ring-0 cursor-pointer  active:shadow-black motion-reduce:transition-none dark:shadow-black/30`}
-            onClick={() => setMode("supprimerSommet")}
+            onClick={() => toggleMode(mode, setMode, "sommet")}
           >
             Placer les sommets du graphe / ville à visiter
           </button>
@@ -130,7 +92,7 @@ const E5x = () => {
             className={`${
               mode === "supprimerSommet" ? "bg-red-500" : "bg-red-400"
             } rounded-xl p-4 m-2 inline-block px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:shadow-black focus:outline-none focus:ring-0 cursor-pointer  active:shadow-black motion-reduce:transition-none dark:shadow-black/30`}
-            onClick={() => setMode("supprimerSommet")}
+            onClick={() => toggleMode(mode, setMode, "supprimerSommet")}
           >
             Supprimer des sommets
           </button>
@@ -139,7 +101,7 @@ const E5x = () => {
             className={`${
               mode === "arrette" ? "bg-blue-500" : "bg-blue-400"
             } rounded-xl p-4 m-2 inline-block px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:shadow-black focus:outline-none focus:ring-0 cursor-pointer  active:shadow-black motion-reduce:transition-none dark:shadow-black/30`}
-            onClick={() => setMode("arrette")}
+            onClick={() => toggleMode(mode, setMode, "arrette")}
           >
             Créer une arête / relier deux villes par une route
           </button>
@@ -148,9 +110,18 @@ const E5x = () => {
             className={`${
               mode === "supprimerArrete" ? "bg-orange-500" : "bg-orange-400"
             } rounded-xl p-4 m-2 inline-block px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:shadow-black focus:outline-none focus:ring-0 cursor-pointer  active:shadow-black motion-reduce:transition-none dark:shadow-black/30`}
-            onClick={() => setMode("supprimerArrete")}
+            onClick={() => toggleMode(mode, setMode, "supprimerArrete")}
           >
             Supprimer une arête
+          </button>
+
+          <button
+            className={`${
+              mode === "supprimerArrete" ? "bg-purple-500" : "bg-purple-400"
+            } col-span-2 rounded-xl p-4 m-2 inline-block px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:shadow-black focus:outline-none focus:ring-0 cursor-pointer  active:shadow-black motion-reduce:transition-none dark:shadow-black/30`}
+            onClick={() => toggleMode(mode, setMode, "selectionDepot")}
+          >
+            selectionner le depot
           </button>
         </div>
 
@@ -158,12 +129,12 @@ const E5x = () => {
           className="relative border border-slate-400 rounded-xl overflow-hidden shadow-lg w-full"
           style={{ height: `${imageRatio * 100}vw` }} // ou utilise un wrapper responsive
         >
-          {(selectedFiles.length > 0 || configImageUrl) && (
+          {(selectedFile || configImageUrl) && (
             <img
               className="absolute inset-0 w-full h-full object-contain z-0"
               src={
-                selectedFiles.length > 0
-                  ? URL.createObjectURL(selectedFiles[0])
+                selectedFile
+                  ? URL.createObjectURL(selectedFile)
                   : configImageUrl
               }
               alt="Image de fond"
@@ -172,26 +143,22 @@ const E5x = () => {
           <div className="absolute inset-0 z-10">
             <DisplayGraph
               mode={mode} // On passe le mode directement
-              backgroundImage={
-                selectedFiles.length > 0
-                  ? URL.createObjectURL(selectedFiles[0])
-                  : configImageUrl
-              }
+              config={selectedConfig}
               edges={edges}
               nodes={nodes}
               setEdges={setEdges}
               setNodes={setNodes}
+
             />
           </div>
         </div>
         <div className="z-30 pt-14 m-auto">
           <input
             type="file"
-            multiple
-            accept="image/*" // Restrict to image files
+            accept="image/*"
             onChange={updateFile}
             ref={fileInputRef}
-            style={{ display: "none" }} // Hide the file input element
+            style={{ display: "none" }}
           />
           <button
             className="plus-button"
@@ -202,24 +169,24 @@ const E5x = () => {
             </p>
           </button>
         </div>
-        <button
-          className="z-30 bg-slate-400 rounded-xl p-4 m-2 inline-block   px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white  transition duration-150 ease-in-out   focus:bg-slate-500 focus:shadow-black focus:outline-none focus:ring-0 active:bg-slate-600 active:shadow-black motion-reduce:transition-none dark:shadow-black/30"
-          onClick={uploadImage(selectedConfig, selectedFiles)}
-
-
-        >
-          Envoyer l'image
-        </button>
-
-        <button
-          className="z-30 bg-slate-400 rounded-xl p-4 m-2 inline-block   px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white  transition duration-150 ease-in-out   focus:bg-slate-500 focus:shadow-black focus:outline-none focus:ring-0 active:bg-slate-600 active:shadow-black motion-reduce:transition-none dark:shadow-black/30"
-          onClick={uploadGraph(selectedConfig, nodes, edges)}
-        >
-          Envoyer le graphe
-        </button>
       </div>
     </div>
   );
 };
 
 export default E5x;
+
+
+        // <button
+        //   className="z-30 bg-slate-400 rounded-xl p-4 m-2 inline-block   px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white  transition duration-150 ease-in-out   focus:bg-slate-500 focus:shadow-black focus:outline-none focus:ring-0 active:bg-slate-600 active:shadow-black motion-reduce:transition-none dark:shadow-black/30"
+        //   onClick={() => uploadImage(selectedConfig, selectedFiles)}
+        // >
+        //   Envoyer l'image
+        // </button>
+
+        // <button
+        //   className="z-30 bg-slate-400 rounded-xl p-4 m-2 inline-block   px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white  transition duration-150 ease-in-out   focus:bg-slate-500 focus:shadow-black focus:outline-none focus:ring-0 active:bg-slate-600 active:shadow-black motion-reduce:transition-none dark:shadow-black/30"
+        //   onClick={() => uploadGraph(selectedConfig, nodes, edges)}
+        // >
+        //   Envoyer le graphe
+        // </button>
