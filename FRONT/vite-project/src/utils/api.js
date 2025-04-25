@@ -1,7 +1,5 @@
 
- 
 import {BASE_URL } from "@utils/apiURL"; // Assurez-vous que le chemin est correct
-
 import axios from "axios";
 
 export const fetchConfigs = async () => {
@@ -13,8 +11,6 @@ export const loadConfig = async (configName) => {
   const res = await axios.get(`${BASE_URL}/load_config/${configName}`);
   return res.data;
 };
-
-
 
 export const uploadImage = async (configName, selectedFile) => {
   if (!selectedFile)
@@ -35,22 +31,11 @@ export const uploadImage = async (configName, selectedFile) => {
   }
 };
 
-
-
-
 export const uploadGraph = async (configName, data) => {
   console.log("recu", data);
   
   try {
-    // const graphData = {
-    //   Node: nodes,
-    //   Edges: edges,
-    // };
 
-
-
-
-    // Utilisation de JSON.stringify pour s'assurer que les données sont envoyées sous forme de chaîne JSON
     const res = await axios.post(`${BASE_URL}/upload_graph/${configName}`, JSON.stringify(data), {
       headers: { "Content-Type": "application/json" },
     });

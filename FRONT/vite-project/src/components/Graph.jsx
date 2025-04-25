@@ -1,13 +1,4 @@
 import React, { useRef, useEffect, useState } from "react";
-import axios from "axios";
-
-import {BASE_URL} from "@utils/apiURL"; // Assurez-vous que le chemin est correct
-
-import {loadGraph} from "@utils/api"; // Assurez-vous que le chemin est correct
-
-
-
-
 
 const GraphCanvas = ({
   mode,
@@ -20,8 +11,6 @@ const GraphCanvas = ({
 }) => {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
-
-  const [isLinking, setIsLinking] = useState(false);
   const [linkStartNode, setLinkStartNode] = useState(null);
   const [firstLinkStartNode, setfirstLinkStartNode] = useState(null);
   const [backgroundImage, setBackgroundImage] = useState(null); // <- image chargée
@@ -34,49 +23,7 @@ const GraphCanvas = ({
     color: "#000", // Couleur par défaut
   });
 
-  // useEffect(() => {
-  //   if (!backgroundImageUrl) return;
 
-  //   const img = new Image();
-  //   img.src = backgroundImageUrl;
-  //   img.onload = () => {
-  //     setBackgroundImage(img); // <- on ne touche plus à backgroundImageUrl ici
-  //     setImageRatio(img.height / img.width);
-  //   };
-  // }, [backgroundImageUrl]);
-
-  // // Charger un graphe exemple
-  // useEffect(() => {
-  //   const fetchGraph = async () => {
-
-  //       const data = loadGraph(config); ;
-
-  //       const nodeObjects = data.Node.map((node) => ({
-  //         id: node.id.toString(),
-  //         label: `Node ${node.id}`,
-  //         xRatio: node.x_ratio,
-  //         yRatio: node.y_ratio,
-  //         color: node.color || "#858585", // Couleur par défaut
-  //       }));
-
-  //       const edgeObjects = data.Edges.map((edge) => ({
-  //         from: edge.from.toString(),
-  //         to: edge.to.toString(),
-  //         distance: edge.distance,
-  //         cost: edge.cost,
-  //         time: edge.time,
-  //         color: edge.color || "#371ac7", // Couleur par défaut
-  //       }));
-
-  //       setNodes(nodeObjects);
-  //       setEdges(edgeObjects);
-
-  //   };
-
-  //   fetchGraph();
-  // }, []);
-
-  // Dessiner
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
@@ -95,7 +42,7 @@ const GraphCanvas = ({
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      console.log("en train de dessiner et l'image cest", backgroundImageUrl);
+
       if (backgroundImage) {
         ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
       }
@@ -137,7 +84,8 @@ const GraphCanvas = ({
         ctx.beginPath();
         ctx.arc(x, y, 25, 0, 2 * Math.PI);
 
-        ctx.fillStyle = node.color || "#000";
+        ctx.fillStyle = node.estDepot ? "#ff0000" : node.color || "#000";
+
         ctx.strokeStyle = "#1ac992";
         ctx.fill();
         ctx.stroke();
@@ -161,8 +109,6 @@ const GraphCanvas = ({
     const yRatio = y / canvas.height;
 
     if (mode === "supprimerArrete") {
-      console.log("clic arette");
-      // Recherche de l'arête la plus proche du clic
       const clickedEdge = edges.find((edge) => {
         const from = nodes.find((n) => n.id === edge.from);
         const to = nodes.find((n) => n.id === edge.to);
@@ -188,20 +134,16 @@ const GraphCanvas = ({
         );
       }
     } else if (mode === "supprimerSommet") {
-      console.log("clic sommet");
-      // Recherche du sommet le plus proche du clic
       const clickedNode = nodes.find((node) => {
         const nodeX = node.xRatio * canvas.width;
         const nodeY = node.yRatio * canvas.height;
-        return Math.hypot(nodeX - x, nodeY - y) < 30; // Rayon augmenté pour détecter le clic sur un sommet
+        return Math.hypot(nodeX - x, nodeY - y) < 30;
       });
 
       if (clickedNode) {
-        // Supprimer le sommet
         setNodes((prevNodes) =>
           prevNodes.filter((node) => node !== clickedNode)
         );
-        // Supprimer les arêtes associées
         setEdges((prevEdges) =>
           prevEdges.filter(
             (edge) => edge.from !== clickedNode.id && edge.to !== clickedNode.id
@@ -209,34 +151,43 @@ const GraphCanvas = ({
         );
       }
     } else if (mode === "sommet") {
-      console.log("clic sommet");
-
       const newId = (nodes.length + 1).toString();
       setNodes((prev) => [
         ...prev,
         { id: newId, label: `Node ${newId}`, xRatio, yRatio, color: "#000" },
       ]);
-      console.log("Nouveau sommet ajouté :", nodes);
+    } else if (mode === "selectionDepot") {
+      const clickedNode = nodes.find((node) => {
+        const nodeX = node.xRatio * canvas.width;
+        const nodeY = node.yRatio * canvas.height;
+        return Math.hypot(nodeX - x, nodeY - y) < 30;
+      });
+
+      if (clickedNode) {
+        setNodes((prevNodes) =>
+          prevNodes.map((node) =>
+            node.id === clickedNode.id
+              ? { ...node, estDepot: true }
+              : { ...node, estDepot: false }
+          )
+        );
+      }
     }
 
-    if (mode === "arrette") {
-      console.log("clic arrete");
 
+
+    if (mode === "arrette") {
       const clickedNode = nodes.find((node) => {
         const nodeX = node.xRatio * canvas.width;
         const nodeY = node.yRatio * canvas.height;
         return Math.hypot(nodeX - x, nodeY - y) < 15;
       });
-      console.log("clickedNode", clickedNode);
 
       if (linkStartNode && clickedNode && linkStartNode.id !== clickedNode.id) {
-        console.log("ouaip et", clickedNode.id, linkStartNode.id);
-        // S'il y a déjà un noeud de départ, créer une arête
         setIsEdgeFormVisible(true);
         setLinkStartNode(clickedNode);
         setNewEdgeData({ ...newEdgeData, toNodeId: clickedNode.id });
       } else {
-        // Sinon, initialiser le noeud de départ
         setLinkStartNode(clickedNode);
         setfirstLinkStartNode(clickedNode);
       }
@@ -254,10 +205,10 @@ const GraphCanvas = ({
         distance: parseFloat(distance) || 1,
         cost: parseFloat(cost) || 1,
         time: parseFloat(time) || 1,
-        color: color || "#7d1179", // Couleur par défaut
+        color: color || "#7d1179",
       },
     ]);
-    console.log(edges);
+
     setNewEdgeData({ distance: "", cost: "", time: "", color: "" });
     setIsEdgeFormVisible(false);
     setLinkStartNode(null);

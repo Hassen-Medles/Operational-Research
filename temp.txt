@@ -1,0 +1,52 @@
+
+
+### Explication du code : Résolution du TSP avec les Colonies de Fourmis (Ant Colony Optimization)
+
+Ce code implémente l'algorithme des Colonies de Fourmis (ACO) pour résoudre le problème du voyageur de commerce (TSP). Voici une explication détaillée des différentes parties :
+
+#### 1. **Initialisation**
+- **Matrice des phéromones** : Une matrice `pheromone` est initialisée avec des valeurs égales à 1. Elle représente la quantité de phéromones sur chaque arête.
+- **Matrice des distances** : Une matrice `distances` est construite à partir des poids des arêtes du graphe.
+- **Variables globales** :
+    - `best_path` : Stocke le meilleur chemin trouvé.
+    - `best_cost` : Stocke le coût du meilleur chemin.
+
+#### 2. **Boucle principale (itérations)**
+L'algorithme effectue plusieurs itérations pour améliorer les solutions :
+- **Construction des chemins** :
+    - Chaque fourmi construit un chemin en partant d'un nœud initial (ici 0).
+    - À chaque étape, une fourmi choisit le prochain nœud en fonction :
+        - **Des phéromones (`tau`)** : Indiquent la préférence pour une arête.
+        - **De l'attractivité (`eta`)** : Inverse de la distance entre les nœuds.
+        - Les probabilités sont calculées en utilisant les paramètres `alpha` (importance des phéromones) et `beta` (importance de l'attractivité).
+    - Une fois tous les nœuds visités, la fourmi retourne au point de départ pour former un cycle.
+    - Le coût du chemin est calculé à l'aide de la fonction `calculate_path_length`.
+
+- **Mise à jour du meilleur chemin** :
+    - Si le chemin construit par une fourmi est meilleur que le meilleur chemin actuel, il est mis à jour.
+
+- **Mise à jour des phéromones** :
+    - Les phéromones sur toutes les arêtes s'évaporent (multiplication par `(1 - evaporation_rate)`).
+    - Les phéromones sont renforcées sur les arêtes des chemins construits par les fourmis, proportionnellement à la qualité du chemin (inverse du coût).
+
+#### 3. **Fonction `calculate_path_length`**
+Cette fonction calcule le coût total d'un chemin donné en sommant les poids des arêtes qui le composent.
+
+#### 4. **Paramètres de l'algorithme**
+- `num_ants` : Nombre de fourmis utilisées pour explorer les solutions.
+- `num_iterations` : Nombre d'itérations de l'algorithme.
+- `alpha` : Importance des phéromones dans le calcul des probabilités.
+- `beta` : Importance de l'attractivité (inverse de la distance).
+- `evaporation_rate` : Taux d'évaporation des phéromones.
+- `pheromone_deposit` : Quantité de phéromones déposée par une fourmi.
+
+#### 5. **Exécution et visualisation**
+- L'algorithme est exécuté sur le graphe TSP, et le meilleur chemin ainsi que son coût sont affichés.
+- Le chemin optimal est visualisé sur le graphe, avec les arêtes du chemin tracées en vert.
+
+#### Points clés :
+- **Colonies de Fourmis** : Cet algorithme est inspiré du comportement des fourmis dans la nature, qui utilisent des phéromones pour trouver des chemins optimaux.
+- **Exploration et exploitation** : L'évaporation des phéromones permet d'éviter les solutions sous-optimales, tandis que le renforcement des phéromones favorise les bons chemins.
+- **Paramètres ajustables** : Les paramètres `alpha`, `beta`, et `evaporation_rate` influencent le comportement de l'algorithme et doivent être ajustés en fonction du problème.
+
+Ce code est efficace pour résoudre des instances du TSP de taille modérée et illustre bien le fonctionnement de l'algorithme des Colonies de Fourmis.
