@@ -1,0 +1,12 @@
+{
+  "base": {
+    "graph": "base.json",
+    "image": "cesi_CMJN-e1673249263164.png",
+    "graph_path": "graph/base.json"
+  },
+  "base2": {
+    "graph": "base2.json",
+    "image": "logo.png",
+    "graph_path": "graph/base2.json"
+  }
+}

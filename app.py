@@ -59,55 +59,172 @@ def grap():
     return response
 
 
-
-@app.route("/upload_image", methods=["POST", "OPTIONS"])
-def upload_image():
+@app.route("/upload_image/<config_name>", methods=["POST", "OPTIONS"])
+def upload_image(config_name):
     if request.method == "OPTIONS":
-        # Réponse à la pré-requête CORS
         response = app.make_response('')
         response.headers.add("Access-Control-Allow-Origin", "*")
         response.headers.add("Access-Control-Allow-Methods", "POST, OPTIONS")
         response.headers.add("Access-Control-Allow-Headers", "Content-Type")
         return response
 
-    if 'files' not in request.files:
-        response = jsonify({"error": "No file part"})
+    if 'image' not in request.files:
+        response = jsonify({"error": "No image file in request"})
+        response.status_code = 400
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response
+
+    image_file = request.files['image']
+    if image_file.filename == '':
+        response = jsonify({"error": "No selected file"}), 400
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response
+
+    filename = image_file.filename
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+    filepath = os.path.join(UPLOAD_FOLDER, filename)
+    image_file.save(filepath)
+
+    # Chargement de la config globale
+    config_file_path = os.path.join("save", "config.json")
+    try:
+        with open(config_file_path, 'r') as f:
+            config_data = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        config_data = {}
+
+    # Mise à jour ou création de l'entrée
+    if config_name not in config_data:
+        config_data[config_name] = {}
+    config_data[config_name]["image"] = filename
+    if "graph" not in config_data[config_name]:
+        config_data[config_name]["graph"] = f"{config_name}.json"
+
+    # Sauvegarde de la config
+    os.makedirs("save", exist_ok=True)
+    with open(config_file_path, 'w') as f:
+        json.dump(config_data, f, indent=2)
+
+    response = jsonify({"message": f"Image saved as {filename}", "config": config_name})
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
+
+
+@app.route("/add_config/<config_name>", methods=["POST"])
+def add_config(config_name):
+    try:
+        # Ajout des en-têtes CORS manuellement
+        response = jsonify({"message": "Configuration créée avec succès", "config": config_name})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        response.headers.add("Access-Control-Allow-Methods", "POST, OPTIONS")
+        response.headers.add("Access-Control-Allow-Headers", "Content-Type")
+
+        # Si la requête est de type OPTIONS, on retourne juste les en-têtes CORS
+        if request.method == "OPTIONS":
+            return response
+
+        # Vérifie si le nom de la configuration est valide
+        if not config_name:
+            return jsonify({"error": "Nom de configuration manquant"}), 400
+
+        # Chemin vers la configuration JSON
+        config_path = os.path.join(GRAPH_FOLDER, f"{config_name}.json")
+
+        # Si le fichier de configuration existe déjà, on ne le recrée pas
+        if os.path.exists(config_path):
+            return jsonify({"error": f"La configuration {config_name} existe déjà"}), 400
+
+        # Crée une configuration vide
+        graph_data = {
+            
+            "graph": {
+                        "Nodes":[],
+                        "Edges":[]
+            }
+                        
+        }
+        
+
+        # Crée le fichier de configuration
+        os.makedirs(GRAPH_FOLDER, exist_ok=True)  # Assure-toi que le dossier existe
+        with open(config_path, 'w') as f:
+            json.dump(graph_data, f, indent=2)
+
+        config_json_path = os.path.join("save", "config.json")
+        if os.path.exists(config_json_path):
+            with open(config_json_path, "r") as f:
+                all_configs = json.load(f)
+        else:
+            all_configs = {}
+
+        all_configs[config_name] = {
+            "graph": f"{config_name}.json",
+            "image": ""  # à remplir plus tard via /upload_image
+        }
+
+        with open(config_json_path, "w") as f:
+            json.dump(all_configs, f, indent=2)
+
+
+        return response
+
+
+
+    except Exception as e:
+        print(f"Erreur: {e}")
+        return jsonify({"error": "Erreur lors de la création de la configuration"}), 500
+
+
+
+@app.route("/upload_graph/<config_name>", methods=["POST", "OPTIONS"])
+def upload_graph(config_name):
+    if request.method == "OPTIONS":
+        response = app.make_response('')
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        response.headers.add("Access-Control-Allow-Methods", "POST, OPTIONS")
+        response.headers.add("Access-Control-Allow-Headers", "Content-Type")
+        return response
+
+    data = request.get_json()
+    if not data:
+        response = jsonify({"error": "No JSON data received"})
         response.headers.add("Access-Control-Allow-Origin", "*")
         return response, 400
 
-    files = request.files.getlist("files")
-    saved_files = []
-
-    for file in files:
-        if file.filename == '':
-            continue
-        filename = file.filename  # ou secure_filename(file.filename)
-        filepath = os.path.join(UPLOAD_FOLDER, filename)
-        file.save(filepath)
-        saved_files.append(filename)
-
-    graph_str = request.form.get("graph")
-    if not graph_str:
-        return jsonify({"error": "No graph data provided"}), 400
+    config_json_path = os.path.join("save", "config.json")
 
     try:
-        graph_data = json.loads(graph_str)
-    except json.JSONDecodeError:
-        return jsonify({"error": "Invalid JSON in graph data"}), 400
+        with open(config_json_path, "r") as f:
+            config_data = json.load(f)
+    except FileNotFoundError:
+        return jsonify({"error": "config.json not found"}), 404
 
-# Créer une nouvelle configuration à partir de l'image et du graphe envoyé
-    config_name = f"config_{len(os.listdir(GRAPH_FOLDER)) + 1}.json"
-    config_data = {
-    "image": saved_files[0],
-    "graph": graph_data,
-    }
+    if config_name not in config_data:
+        return jsonify({"error": f"Configuration '{config_name}' not found in config.json"}), 404
 
-# Sauvegarder la configuration dans un fichier JSON formaté
-    with open(os.path.join(GRAPH_FOLDER, config_name), "w") as f:
-        json.dump(config_data, f, indent=4)  # Indentation ajoutée pour lisibilité
+    graph_filename = config_data[config_name].get("graph")
+    if not graph_filename:
+        return jsonify({"error": f"No graph filename defined for configuration '{config_name}'"}), 400
 
-    response = jsonify({"status": "success", "saved": saved_files, "config_name": config_name})
+    graph_path = os.path.join(GRAPH_FOLDER, graph_filename)
+    os.makedirs(GRAPH_FOLDER, exist_ok=True)
+    print("enregistre"+str(data))
+    with open(graph_path, 'w') as f:
+        json.dump(data, f, indent=2)
 
+    response = jsonify({"message": f"Graph saved under {graph_filename}"})
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
+
+
+
+    # Sauvegarde du graphe
+    graph_path = os.path.join(GRAPH_FOLDER, f"{config_name}.json")
+    os.makedirs(GRAPH_FOLDER, exist_ok=True)
+    with open(graph_path, 'w') as f:
+        json.dump(data, f, indent=2)
+
+    response = jsonify({"message": f"Graph saved under {config_name}.json"})
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
 
@@ -120,12 +237,18 @@ def serve_image(filename):
 
 
 
-
 @app.route("/list_configs", methods=["GET"])
 def list_configs():
-    # Données de configuration
-    configurations = os.listdir(GRAPH_FOLDER)  # Liste des configurations sauvegardées
-    response = jsonify(configurations)
+    config_json_path = os.path.join("save", "config.json")
+
+    if not os.path.exists(config_json_path):
+        return jsonify([])  # retourne une liste vide si aucun fichier n'existe
+
+    with open(config_json_path, "r") as f:
+        all_configs = json.load(f)
+
+    # On renvoie uniquement les noms de config (les clés du dict)
+    response = jsonify(list(all_configs.keys()))
 
     # Ajout des en-têtes CORS
     response.headers.add("Access-Control-Allow-Origin", "*")
@@ -134,14 +257,22 @@ def list_configs():
 
     return response
 
+
 @app.route("/load_config/<filename>", methods=["GET"])
 def load_config(filename):
     try:
-        # Charger la configuration (les données du fichier)
-        with open(os.path.join(GRAPH_FOLDER, filename), "r") as f:
-            config_data = json.load(f)
+        with open(os.path.join("save", "config.json"), "r") as f:
+            configuration_data = json.load(f)
 
-        response = jsonify(config_data)
+            image = configuration_data[filename]["image"]
+
+        # Charger la configuration (les données du fichier)
+        with open(os.path.join(GRAPH_FOLDER, configuration_data[filename]["graph"]), "r") as f:
+            config_data = json.load(f)
+            
+        prereponse= {"graph":config_data,"image":image}
+
+        response = jsonify(prereponse)
 
         # Ajout des en-têtes CORS
         response.headers.add("Access-Control-Allow-Origin", "*")
