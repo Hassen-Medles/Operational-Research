@@ -57,18 +57,45 @@ const GraphCanvas = ({
           const x2 = to.xRatio * canvas.width;
           const y2 = to.yRatio * canvas.height;
 
-
           ctx.lineWidth = 3;
           // Dessiner la ligne
+          // Trouver toutes les arêtes entre les deux mêmes nœuds (dans les deux sens)
+          const parallelEdges = edges.filter(
+            (e) =>
+              (e.from === edge.from && e.to === edge.to) ||
+              (e.from === edge.to && e.to === edge.from)
+          );
+
+          // Trouver l'index de cette arête parmi les arêtes parallèles
+          const index = parallelEdges.findIndex((e) => e === edge);
+
+          // Vecteur directeur
+          const dx = x2 - x1;
+          const dy = y2 - y1;
+          const length = Math.sqrt(dx * dx + dy * dy);
+
+          // Vecteur normalisé perpendiculaire (pour décaler la ligne)
+          const offsetX = -dy / length;
+          const offsetY = dx / length;
+
+          // Coefficient d'espacement
+          const spacing = 10; // pixels
+          const offsetAmount =
+            (index - (parallelEdges.length - 1) / 2) * spacing;
+
+          // Appliquer l'offset
+          const ox = offsetX * offsetAmount;
+          const oy = offsetY * offsetAmount;
+
           ctx.beginPath();
-          ctx.moveTo(x1, y1);
-          ctx.lineTo(x2, y2);
-          ctx.strokeStyle = edge.color || "#371ac7"; // Couleur par défaut
+          ctx.moveTo(x1 + ox, y1 + oy);
+          ctx.lineTo(x2 + ox, y2 + oy);
+          ctx.strokeStyle = edge.color || "#371ac7";
           ctx.stroke();
 
-          // Texte des pondérations
-          const midX = (x1 + x2) / 2;
-          const midY = (y1 + y2) / 2;
+          // Texte des pondérations (aussi décalé)
+          const midX = (x1 + x2) / 2 + ox;
+          const midY = (y1 + y2) / 2 + oy;
           ctx.fillStyle = "black";
           ctx.font = "bold 12px Arial";
 

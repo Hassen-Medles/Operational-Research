@@ -8,7 +8,11 @@ import glob
 from pathing import GRAPH_FOLDER, UPLOAD_FOLDER, CONFIG_FOLDER
 
 
-
+from jsoner import litjsonfichier, sauvegarder_json ,maj_config_apres_resolution
+from pathing import UPLOAD_FOLDER, GRAPH_FOLDER
+from color import colorier_routes, appliquer_couleurs
+from VRP import robust_vrp
+from graphage import construire_graphe, trouver_depot
 
 
 
@@ -43,6 +47,18 @@ for i in nodes:
 @app.route("/")
 def home():
     return render_template("index.html")
+
+@app.route("/chunk.js")
+def chunk_js():
+    return send_from_directory("static", "chunk.js")
+
+@app.route("/index.css")
+def index_css():
+    return send_from_directory("static", "index.css")
+
+@app.route("/plugin.js")
+def index_js():
+    return send_from_directory("static", "plugin.js")
 
 # @app.route("/graph")
 # def grap():
@@ -203,6 +219,35 @@ def upload_graph(config_name):
     print("enregistre"+str(data))
     with open(graph_path, 'w') as f:
         json.dump(data, f, indent=2)
+        
+        
+    nom_fichier = "base.json"
+    json_data = litjsonfichier(GRAPH_FOLDER,graph_path)
+
+
+
+    if json_data:
+        G = construire_graphe(json_data)
+    
+        # ⚠️ Assure-toi d’avoir défini la fonction robust_vrp(G, depot) avant ça
+        depot = trouver_depot(G)
+        routes = robust_vrp(G, depot)
+
+        print("\n🚚 Tournées optimisées :")
+        for i, route in enumerate(routes):
+            print(f"Camion {i+1} : {' -> '.join(map(str, route))}")
+
+        color_map = colorier_routes(routes, G)
+        json_data["graph"]["Edges"] = appliquer_couleurs(json_data["graph"]["Edges"], color_map)
+
+        nouveau_nom = "resolved_" + graph_filename
+        nom_config = os.path.splitext(graph_filename)[0]
+        sauvegarder_json(GRAPH_FOLDER,json_data, nouveau_nom)
+        print(f"\n✅ Graphe coloré enregistré dans {nouveau_nom}")
+    
+        maj_config_apres_resolution(GRAPH_FOLDER,nom_config,nouveau_nom)
+
+
 
     response = jsonify({"message": f"Graph saved under {graph_filename}"})
     response.headers.add("Access-Control-Allow-Origin", "*")
@@ -286,17 +331,41 @@ def delete_config(filename):
         return response
 
     try:
-        # Construire le chemin du fichier à supprimer
-        file_path = os.path.join(GRAPH_FOLDER, filename)
-        
-        # Vérifier si le fichier existe
-        if os.path.exists(file_path):
-            os.remove(file_path)  # Supprimer le fichier
-            response = jsonify({"status": "success", "message": f"Configuration {filename} deleted"})
-        else:
-            response = jsonify({"error": "Configuration not found"}), 404
+        config_json_path = os.path.join(CONFIG_FOLDER, "config.json")
 
-        # Ajouter les en-têtes CORS à la réponse
+        # Charger la configuration globale
+        if not os.path.exists(config_json_path):
+            return jsonify({"error": "config.json not found"}), 404
+
+        with open(config_json_path, "r") as f:
+            config_data = json.load(f)
+
+        # Vérifier si la config demandée existe
+        if filename not in config_data:
+            return jsonify({"error": f"Configuration {filename} not found"}), 404
+
+        # Récupérer les chemins des fichiers associés
+        graph_filename = config_data[filename].get("graph")
+        image_filename = config_data[filename].get("image")
+
+        # Supprimer le graphe
+        if graph_filename:
+            graph_path = os.path.join(GRAPH_FOLDER, graph_filename)
+            if os.path.exists(graph_path):
+                os.remove(graph_path)
+
+        # Supprimer l'image
+        if image_filename:
+            image_path = os.path.join(UPLOAD_FOLDER, image_filename)
+            if os.path.exists(image_path):
+                os.remove(image_path)
+
+        # Supprimer l'entrée du fichier config.json
+        del config_data[filename]
+        with open(config_json_path, "w") as f:
+            json.dump(config_data, f, indent=2)
+
+        response = jsonify({"status": "success", "message": f"Configuration {filename} and related files deleted"})
         response.headers.add("Access-Control-Allow-Origin", "*")
         response.headers.add("Access-Control-Allow-Methods", "DELETE, OPTIONS")
         response.headers.add("Access-Control-Allow-Headers", "Content-Type")
@@ -305,6 +374,7 @@ def delete_config(filename):
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 
 if __name__ == "__main__":

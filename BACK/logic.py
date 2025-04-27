@@ -16,18 +16,6 @@ from graphage import construire_graphe, trouver_depot
 
 
 
-# data = litjsonfichier(GRAPH_FOLDER,"base2.json")
-
-# if data:
-#     G = construire_graphe(data)
-
-# depot = trouver_depot(G)
-
-# routes = robust_vrp(G, depot)
-
-# print("\n🚚 Tournées optimisées :")
-# for i, route in enumerate(routes):
-#     print(f"Camion {i+1} : {' -> '.join(map(str, route))}")
 
 
 nom_fichier = "base.json"
@@ -50,8 +38,9 @@ if json_data:
     json_data["graph"]["Edges"] = appliquer_couleurs(json_data["graph"]["Edges"], color_map)
 
     nouveau_nom = "resolved_" + nom_fichier
+    nom_config = os.path.splitext(nom_fichier)[0]
     sauvegarder_json(GRAPH_FOLDER,json_data, nouveau_nom)
     print(f"\n✅ Graphe coloré enregistré dans {nouveau_nom}")
     
-    maj_config_apres_resolution(GRAPH_FOLDER,nouveau_nom)
+    maj_config_apres_resolution(GRAPH_FOLDER,nom_config,nouveau_nom)
 

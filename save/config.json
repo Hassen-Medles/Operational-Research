@@ -1,7 +1,7 @@
 {
   "base": {
     "graph": "base.json",
-    "image": "ROUFFIAT MICKAEL.jpg",
+    "image": "cesi_CMJN-e1673249263164.png",
     "graph_path": "graph/base.json"
   },
   "base2": {
@@ -11,10 +11,6 @@
   },
   "resolved_base": {
     "graph": "resolved_base.json",
-    "image": ""
-  },
-  "resolved_base2": {
-    "graph": "resolved_base2.json",
-    "image": ""
+    "image": "cesi_CMJN-e1673249263164.png"
   }
 }

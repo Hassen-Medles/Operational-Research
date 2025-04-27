@@ -11,15 +11,24 @@ def colorier_routes(routes, G):
         for i in range(len(route) - 1):
             n1 = route[i]
             n2 = route[i+1]
-            if G.has_edge(n1, n2):
-                edge_color_map[frozenset((n1, n2))] = color
+            key = frozenset((n1, n2))
+            if key not in edge_color_map:
+                edge_color_map[key] = []
+            edge_color_map[key].append(color)  # On accumule toutes les couleurs
     return edge_color_map
 
+
 def appliquer_couleurs(edge_list, edge_color_map):
+    new_edge_list = []
     for edge in edge_list:
         key = frozenset((edge["from"], edge["to"]))
         if key in edge_color_map:
-            edge["color"] = edge_color_map[key]
-    return edge_list
-
-
+            colors = edge_color_map[key]
+            for color in colors:
+                # DUPLIQUER l'arête pour chaque couleur
+                new_edge = dict(edge)  # Copie propre
+                new_edge["color"] = color
+                new_edge_list.append(new_edge)
+        else:
+            new_edge_list.append(edge)  # Arête normale
+    return new_edge_list

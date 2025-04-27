@@ -14,6 +14,8 @@ def litjsonfichier(GRAPH_FOLDER,filename):
     
     
 def sauvegarder_json(GRAPH_FOLDER,data, filename):
+    print("graph folder",GRAPH_FOLDER)
+    print("filename",filename)
     try:
         with open(os.path.join(GRAPH_FOLDER, filename), "w") as f:
             json.dump(data, f, indent=4)
@@ -24,7 +26,7 @@ def sauvegarder_json(GRAPH_FOLDER,data, filename):
         
         
 
-def maj_config_apres_resolution(GRAPH_FOLDER,nom_fichier_resolu):
+def maj_config_apres_resolution(GRAPH_FOLDER,nom_config,nom_fichier_resolu):
     CONFIG_PATH = os.path.join(GRAPH_FOLDER, "..", "config.json")  # ajuste si besoin
 
     nom_sans_ext = os.path.splitext(nom_fichier_resolu)[0]
@@ -34,13 +36,18 @@ def maj_config_apres_resolution(GRAPH_FOLDER,nom_fichier_resolu):
         if os.path.exists(CONFIG_PATH):
             with open(CONFIG_PATH, "r") as f:
                 all_configs = json.load(f)
+                print("all_configs", all_configs)
+                cheminimage = all_configs.get(nom_config, {}).get("image", "")
+                print("config actuelle", all_configs.get(nom_config, {}))
+                print("cheminimage", nom_config)
+                print("image", cheminimage)
         else:
             all_configs = {}
 
         # Ajouter ou mettre à jour l'entrée correspondante
         all_configs[nom_sans_ext] = {
             "graph": nom_fichier_resolu,
-            "image": ""  # tu peux adapter cette ligne si une image existe déjà
+            "image": cheminimage # tu peux adapter cette ligne si une image existe déjà
         }
 
         # Sauvegarder la mise à jour
