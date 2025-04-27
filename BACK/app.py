@@ -12,8 +12,8 @@ from jsoner import litjsonfichier, sauvegarder_json ,maj_config_apres_resolution
 from pathing import UPLOAD_FOLDER, GRAPH_FOLDER
 from color import colorier_routes, appliquer_couleurs
 from VRP import robust_vrp
-from graphage import construire_graphe, trouver_depot
-
+from graphage import construire_graphe
+from complexifier import creer_graphe_complet_depuis_dijkstra
 
 
 
@@ -216,7 +216,7 @@ def upload_graph(config_name):
 
     graph_path = os.path.join(GRAPH_FOLDER, graph_filename)
     os.makedirs(GRAPH_FOLDER, exist_ok=True)
-    print("enregistre"+str(data))
+
     with open(graph_path, 'w') as f:
         json.dump(data, f, indent=2)
         
@@ -227,19 +227,23 @@ def upload_graph(config_name):
 
 
     if json_data:
-        G = construire_graphe(json_data)
-    
+        Gtemp,depot = construire_graphe(json_data)
+        G = creer_graphe_complet_depuis_dijkstra(Gtemp) 
         # ⚠️ Assure-toi d’avoir défini la fonction robust_vrp(G, depot) avant ça
-        depot = trouver_depot(G)
-        routes = robust_vrp(G, depot)
+
+        print("Depot trouvé : ", depot)
+
+        weight_type='distance'
+        routes = robust_vrp(G,4,weight_type, depot)
 
         print("\n🚚 Tournées optimisées :")
         for i, route in enumerate(routes):
             print(f"Camion {i+1} : {' -> '.join(map(str, route))}")
-
+        print("routes : ",routes)
         color_map = colorier_routes(routes, G)
+        print("Color map : ",color_map)
         json_data["graph"]["Edges"] = appliquer_couleurs(json_data["graph"]["Edges"], color_map)
-
+        print("avant sauvegarde : ",json_data["graph"]["Edges"])
         nouveau_nom = "resolved_" + graph_filename
         nom_config = os.path.splitext(graph_filename)[0]
         sauvegarder_json(GRAPH_FOLDER,json_data, nouveau_nom)

@@ -1,0 +1,352 @@
+{
+    "graph": {
+        "Edges": [
+            {
+                "color": "#000",
+                "cost": 1,
+                "distance": 1,
+                "from": "6",
+                "time": 1,
+                "to": "2"
+            },
+            {
+                "color": "#ff00ff",
+                "cost": 1,
+                "distance": 1,
+                "from": "2",
+                "time": 1,
+                "to": "5"
+            },
+            {
+                "color": "#ff00ff",
+                "cost": 1,
+                "distance": 1,
+                "from": "5",
+                "time": 1,
+                "to": "4"
+            },
+            {
+                "color": "#ff00ff",
+                "cost": 1,
+                "distance": 1,
+                "from": "8",
+                "time": 1,
+                "to": "4"
+            },
+            {
+                "color": "#ff00ff",
+                "cost": 1,
+                "distance": 1,
+                "from": "3",
+                "time": 1,
+                "to": "8"
+            },
+            {
+                "color": "#ff00ff",
+                "cost": 1,
+                "distance": 1,
+                "from": "7",
+                "time": 1,
+                "to": "3"
+            },
+            {
+                "color": "#ff00ff",
+                "cost": 1,
+                "distance": 1,
+                "from": "1",
+                "time": 1,
+                "to": "6"
+            },
+            {
+                "color": "#c29fe7",
+                "cost": 1,
+                "distance": 1,
+                "from": "7",
+                "time": 1,
+                "to": "1"
+            },
+            {
+                "color": "#28da7e",
+                "cost": 1,
+                "distance": 1,
+                "from": "9",
+                "time": 1,
+                "to": "2"
+            },
+            {
+                "color": "#77305d",
+                "cost": 1,
+                "distance": 1,
+                "from": "9",
+                "time": 1,
+                "to": "4"
+            },
+            {
+                "color": "#33b675",
+                "cost": 1,
+                "distance": 1,
+                "from": "9",
+                "time": 1,
+                "to": "3"
+            },
+            {
+                "color": "#c29fe7",
+                "cost": 1,
+                "distance": 1,
+                "from": "1",
+                "time": 1,
+                "to": "9"
+            },
+            {
+                "color": "#c29fe7",
+                "cost": 1,
+                "distance": 1,
+                "from": "6",
+                "time": 1,
+                "to": "9"
+            },
+            {
+                "color": "#ff00ff",
+                "cost": 1,
+                "distance": 1,
+                "from": "6",
+                "time": 1,
+                "to": "4"
+            },
+            {
+                "color": "#ff00ff",
+                "cost": 1,
+                "distance": 1,
+                "from": "6",
+                "time": 1,
+                "to": "5"
+            },
+            {
+                "color": "#c29fe7",
+                "cost": 1,
+                "distance": 1,
+                "from": "6",
+                "time": 1,
+                "to": "8"
+            },
+            {
+                "color": "#ff00ff",
+                "cost": 1,
+                "distance": 1,
+                "from": "6",
+                "time": 1,
+                "to": "3"
+            },
+            {
+                "color": "#ff00ff",
+                "cost": 1,
+                "distance": 1,
+                "from": "6",
+                "time": 1,
+                "to": "7"
+            },
+            {
+                "color": "#ff00ff",
+                "cost": 1,
+                "distance": 1,
+                "from": "2",
+                "time": 1,
+                "to": "1"
+            },
+            {
+                "color": "#ff00ff",
+                "cost": 1,
+                "distance": 1,
+                "from": "2",
+                "time": 1,
+                "to": "3"
+            },
+            {
+                "color": "#ff00ff",
+                "cost": 1,
+                "distance": 1,
+                "from": "2",
+                "time": 1,
+                "to": "7"
+            },
+            {
+                "color": "#ff00ff",
+                "cost": 1,
+                "distance": 1,
+                "from": "2",
+                "time": 1,
+                "to": "4"
+            },
+            {
+                "color": "#ff00ff",
+                "cost": 1,
+                "distance": 1,
+                "from": "2",
+                "time": 1,
+                "to": "8"
+            },
+            {
+                "color": "#33b675",
+                "cost": 1,
+                "distance": 1,
+                "from": "5",
+                "time": 1,
+                "to": "9"
+            },
+            {
+                "color": "#ff00ff",
+                "cost": 1,
+                "distance": 1,
+                "from": "5",
+                "time": 1,
+                "to": "7"
+            },
+            {
+                "color": "#33b675",
+                "cost": 1,
+                "distance": 1,
+                "from": "3",
+                "time": 1,
+                "to": "5"
+            },
+            {
+                "color": "#ff00ff",
+                "cost": 1,
+                "distance": 1,
+                "from": "8",
+                "time": 1,
+                "to": "5"
+            },
+            {
+                "color": "#ff00ff",
+                "cost": 1,
+                "distance": 1,
+                "from": "1",
+                "time": 1,
+                "to": "5"
+            },
+            {
+                "color": "#ff00ff",
+                "cost": 1,
+                "distance": 1,
+                "from": "3",
+                "time": 1,
+                "to": "4"
+            },
+            {
+                "color": "#c29fe7",
+                "cost": 1,
+                "distance": 1,
+                "from": "8",
+                "time": 1,
+                "to": "7"
+            },
+            {
+                "color": "#ff00ff",
+                "cost": 1,
+                "distance": 1,
+                "from": "1",
+                "time": 1,
+                "to": "8"
+            },
+            {
+                "color": "#ff00ff",
+                "cost": 1,
+                "distance": 1,
+                "from": "8",
+                "time": 1,
+                "to": "2"
+            },
+            {
+                "color": "#ff00ff",
+                "cost": 1,
+                "distance": 1,
+                "from": "1",
+                "time": 1,
+                "to": "2"
+            },
+            {
+                "color": "#ff00ff",
+                "cost": 1,
+                "distance": 1,
+                "from": "1",
+                "time": 1,
+                "to": "3"
+            }
+        ],
+        "Nodes": [
+            {
+                "color": "#000",
+                "estDepot": false,
+                "id": "1",
+                "label": "Node 1",
+                "xRatio": 0.309024612579763,
+                "yRatio": 0.17775752051048313
+            },
+            {
+                "color": "#000",
+                "estDepot": false,
+                "id": "2",
+                "label": "Node 2",
+                "xRatio": 0.5724703737465816,
+                "yRatio": 0.18413855970829535
+            },
+            {
+                "color": "#000",
+                "estDepot": false,
+                "id": "3",
+                "label": "Node 3",
+                "xRatio": 0.309024612579763,
+                "yRatio": 0.4074749316317229
+            },
+            {
+                "color": "#000",
+                "estDepot": false,
+                "id": "4",
+                "label": "Node 4",
+                "xRatio": 0.5642661804922516,
+                "yRatio": 0.41385597082953507
+            },
+            {
+                "color": "#000",
+                "estDepot": false,
+                "id": "5",
+                "label": "Node 5",
+                "xRatio": 0.7757520510483136,
+                "yRatio": 0.300820419325433
+            },
+            {
+                "color": "#000",
+                "estDepot": false,
+                "id": "6",
+                "label": "Node 6",
+                "xRatio": 0.44667274384685507,
+                "yRatio": 0.044667274384685506
+            },
+            {
+                "color": "#000",
+                "estDepot": false,
+                "id": "7",
+                "label": "Node 7",
+                "xRatio": 0.07110300820419325,
+                "yRatio": 0.31175934366453967
+            },
+            {
+                "color": "#000",
+                "estDepot": false,
+                "id": "8",
+                "label": "Node 8",
+                "xRatio": 0.4430264357338195,
+                "yRatio": 0.544211485870556
+            },
+            {
+                "color": "#000",
+                "estDepot": true,
+                "id": "9",
+                "label": "Node 9",
+                "xRatio": 0.44667274384685507,
+                "yRatio": 0.28988149498632637
+            }
+        ]
+    }
+}

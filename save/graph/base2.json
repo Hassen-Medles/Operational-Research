@@ -264,20 +264,20 @@
         "to": "16"
       },
       {
-        "from": "31",
-        "to": "24",
-        "distance": 2,
+        "color": "#000",
         "cost": 4,
+        "distance": 2,
+        "from": "31",
         "time": 2,
-        "color": "#000"
+        "to": "24"
       },
       {
-        "from": "29",
-        "to": "31",
-        "distance": 44,
+        "color": "#7d1179",
         "cost": 4,
+        "distance": 44,
+        "from": "29",
         "time": 4,
-        "color": "#7d1179"
+        "to": "31"
       }
     ],
     "Nodes": [

@@ -181,7 +181,7 @@ const GraphCanvas = ({
       const newId = (nodes.length + 1).toString();
       setNodes((prev) => [
         ...prev,
-        { id: newId, label: `Node ${newId}`, xRatio, yRatio, color: "#000" },
+        { id: newId, label: `Node ${newId}`, xRatio, yRatio, color: "#000", estDepot: false },
       ]);
     } else if (mode === "selectionDepot") {
       const clickedNode = nodes.find((node) => {

@@ -1,34 +1,37 @@
 import random
 
-
 def generer_couleur():
     return "#{:06x}".format(random.randint(0, 0xFFFFFF))
 
 def colorier_routes(routes, G):
-    edge_color_map = {}
+    edge_color_map = []  # Liste de dictionnaires pour stocker les arêtes et leur couleur
     for camion_index, route in enumerate(routes):
         color = generer_couleur()
-        for i in range(len(route) - 1):
-            n1 = route[i]
-            n2 = route[i+1]
-            key = frozenset((n1, n2))
-            if key not in edge_color_map:
-                edge_color_map[key] = []
-            edge_color_map[key].append(color)  # On accumule toutes les couleurs
+        for edge in route:
+            # Créer un dictionnaire pour chaque arête
+            edge_dict = {"from": edge[0], "to": edge[1], "color": color}
+            # Ajouter l'arête avec la couleur à la liste
+            edge_color_map.append(edge_dict)
     return edge_color_map
 
 
 def appliquer_couleurs(edge_list, edge_color_map):
     new_edge_list = []
+    print("edge_list", edge_list)
+    print("edge_color_map", edge_color_map)
+    
     for edge in edge_list:
-        key = frozenset((edge["from"], edge["to"]))
-        if key in edge_color_map:
-            colors = edge_color_map[key]
-            for color in colors:
-                # DUPLIQUER l'arête pour chaque couleur
-                new_edge = dict(edge)  # Copie propre
-                new_edge["color"] = color
-                new_edge_list.append(new_edge)
+        # Vérifier chaque arête dans edge_color_map
+        for edge_color in edge_color_map:
+            # Comparer l'arête "from" et "to" avec celles dans la liste
+            if edge["from"] == edge_color["from"] and edge["to"] == edge_color["to"]:
+                print("edge trouvé", edge)
+                new_edge = dict(edge)  # Copie propre de l'arête
+                new_edge["color"] = edge_color["color"]  # Ajouter la couleur
+                new_edge_list.append(new_edge)  # Ajouter l'arête colorée
+                break  # Si on a trouvé l'arête, on sort du loop
         else:
-            new_edge_list.append(edge)  # Arête normale
+            # Arête sans couleur si pas trouvée
+            new_edge_list.append(edge)
+
     return new_edge_list

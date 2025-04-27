@@ -12,5 +12,17 @@
   "resolved_base": {
     "graph": "resolved_base.json",
     "image": "cesi_CMJN-e1673249263164.png"
+  },
+  "retest": {
+    "graph": "retest.json",
+    "image": ""
+  },
+  "resolved_retest": {
+    "graph": "resolved_retest.json",
+    "image": ""
+  },
+  "resolved_base2": {
+    "graph": "resolved_base2.json",
+    "image": "hugo.jpeg"
   }
 }

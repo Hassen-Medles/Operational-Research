@@ -143,14 +143,6 @@
         "to": "26"
       },
       {
-        "color": "2",
-        "cost": 2,
-        "distance": 2,
-        "from": "30",
-        "time": 2,
-        "to": "29"
-      },
-      {
         "color": "#7d1179",
         "cost": 2,
         "distance": 2,
@@ -461,18 +453,18 @@
       {
         "color": "#000",
         "estDepot": false,
-        "id": "31",
-        "label": "Node 31",
-        "xRatio": 0.3242249080399369,
-        "yRatio": 0.025223331581713086
-      },
-      {
-        "color": "#000",
-        "estDepot": false,
         "id": "32",
         "label": "Node 32",
         "xRatio": 0.6855999999841055,
         "yRatio": 0.054933329264322914
+      },
+      {
+        "color": "#000",
+        "estDepot": false,
+        "id": "29",
+        "label": "Node 29",
+        "xRatio": 0.15496809480401094,
+        "yRatio": 0.0674567000911577
       }
     ]
   }

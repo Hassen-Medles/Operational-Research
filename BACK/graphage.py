@@ -3,31 +3,30 @@ import networkx as nx
 
 
 
-def trouver_depot(G):
-    for node, data in G.nodes(data=True):
-        if data.get("estDepot") == True:
-            return node
-    return None  # Aucun dépôt trouvé
 
-    
     
 
 def construire_graphe(json_data):
     G = nx.Graph()
-    print(json_data["graph"])
-    nodes = json_data["graph"]["Nodes"]
-    edges = json_data["graph"]["Edges"]
 
+    nodes = json_data["graph"]["Nodes"]
+
+    edges = json_data["graph"]["Edges"]
+    depot=0
     # Ajout des sommets avec leurs attributs
     for node in nodes:
-        G.add_node(node["id"], label=node["label"], xRatio=node["xRatio"], yRatio=node["yRatio"], estDepot=node["estDepot"])
+
+        if node["estDepot"] == True:
+            depot = node["id"]
+
+        G.add_node(node["id"], label=node["label"], xRatio=node["xRatio"], yRatio=node["yRatio"], estDepot=node.get("estDepot"))
 
     # Ajout des arêtes avec leurs poids
     for edge in edges:
         G.add_edge(edge["from"], edge["to"],
-                   weight=edge["distance"],
-                #    cost=edge["cost"],
-                #    time=edge["time"]
+        distance=edge["distance"],
+        cout=edge["cost"],
+        temps=edge["time"]
                    )
 
-    return G
+    return G, depot
