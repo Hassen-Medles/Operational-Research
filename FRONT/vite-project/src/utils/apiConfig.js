@@ -43,7 +43,7 @@ export const addConfig = async (configName) => {
     const response = await fetch(
       `${BASE_URL.replace("10.116.130.43", "localhost")}/add_config/${configName}`,
       {
-        method: "POST", // Utilise POST pour ajouter une nouvelle configuration
+        method: "POST",
       }
     );
     if (!response.ok) {
@@ -61,24 +61,19 @@ export const addConfig = async (configName) => {
 
 
 export const EcraserConfig = async (configName, data, selectedFile,setSelectedFile, nodes,edges) => {
-    console.log("EcrasersdsdsdsdsdsdsdConfig",nodes);
-    console.log("apiURLllllllllllllll", "EcraserConfig", "config:", configName, "graph:", data.graph, "image:", selectedFile);
+
+
     const graphaenvoyer = {
         graph: {
             Edges: edges,
             Nodes: nodes,
         },
     };
-    console.log("graphaenvoyer", graphaenvoyer);
-    try {
-      console.log("uploadGraph", configName, graphaenvoyer);
-      uploadGraph(configName, graphaenvoyer); // Passer le paramètre pour écraser
-      
-        console.log("uploadImage", configName, selectedFile);
-        uploadImage(configName, selectedFile);
-        // setSelectedFile(null); // Réinitialiser le fichier sélectionné après l'envoi
 
-        
+    try {
+      uploadGraph(configName, graphaenvoyer);
+      uploadImage(configName, selectedFile);
+
     return true;
   } catch (error) {
     console.error("Erreur de réseau ou de serveur", error);

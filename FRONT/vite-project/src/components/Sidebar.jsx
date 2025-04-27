@@ -43,7 +43,7 @@ const Sidebar = ({
     if (data.graph.graph.Edges.length != 0) {
       setEdges(data.graph.graph.Edges); // Mettre à jour les arêtes
     }
-    console.log("l'image cest", data.graph.image);
+
     setConfigImageUrl(cheminImage(data.image)); // Mettre à jour l'URL de l'image de la config
     setSelectedFile(null)
 
@@ -60,7 +60,7 @@ const Sidebar = ({
   const handleEcraserClick = async (name) => {
     const data = await loadConfig(name);
 
-    console.log("nodes", nodes);
+
     EcraserConfig(name, data, selectedFile, setSelectedFile,nodes, edges ); // <- ici on passe les vrais fichiers
   };
 

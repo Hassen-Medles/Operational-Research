@@ -43,7 +43,7 @@ def update(frame):
 # Creating the Animation object
 stop_x = 2  # Choisis la valeur de x où tu veux stopper
 stop_index = np.argmin(np.abs(object_path_x - stop_x))
-pause_frames = 20  # pour durer plus longtemps sur la dernière frame
+pause_frames = 40  # pour durer plus longtemps sur la dernière frame
 frames = list(range(stop_index + 1)) + [stop_index] * pause_frames
 
 # Animation avec les frames customisées

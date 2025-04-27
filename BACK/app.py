@@ -5,15 +5,18 @@ import random
 import networkx as nx
 import glob
 
+from pathing import GRAPH_FOLDER, UPLOAD_FOLDER, CONFIG_FOLDER
 
-# Configuration
-UPLOAD_FOLDER = "save/img"
-GRAPH_FOLDER = "save/graph"
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-os.makedirs(GRAPH_FOLDER, exist_ok=True)
+
+
+
+
+
 
 app = Flask(__name__)
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+# app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
+
 
 # Génération d'un graphe pour test
 random.seed(42)
@@ -35,28 +38,17 @@ for i in nodes:
 
 
 
-dicograph = {
-    "Node": [
-        {
-            "id": node,
-            "x_ratio": G.nodes[node]["x_ratio"],
-            "y_ratio": G.nodes[node]["y_ratio"]
-        } for node in G.nodes()
-    ],
-    "Edges": [
-        {"from": u, "to": v, **attrs} for u, v, attrs in G.edges(data=True)
-    ],
-}
+
 
 @app.route("/")
 def home():
     return render_template("index.html")
 
-@app.route("/graph")
-def grap():
-    response = jsonify(dicograph)
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    return response
+# @app.route("/graph")
+# def grap():
+#     response = jsonify(dicograph)
+#     response.headers.add("Access-Control-Allow-Origin", "*")
+#     return response
 
 
 @app.route("/upload_image/<config_name>", methods=["POST", "OPTIONS"])
@@ -86,7 +78,7 @@ def upload_image(config_name):
     image_file.save(filepath)
 
     # Chargement de la config globale
-    config_file_path = os.path.join("save", "config.json")
+    config_file_path = os.path.join(CONFIG_FOLDER, "config.json")
     try:
         with open(config_file_path, 'r') as f:
             config_data = json.load(f)
@@ -101,7 +93,7 @@ def upload_image(config_name):
         config_data[config_name]["graph"] = f"{config_name}.json"
 
     # Sauvegarde de la config
-    os.makedirs("save", exist_ok=True)
+    os.makedirs(CONFIG_FOLDER, exist_ok=True)
     with open(config_file_path, 'w') as f:
         json.dump(config_data, f, indent=2)
 
@@ -150,7 +142,7 @@ def add_config(config_name):
         with open(config_path, 'w') as f:
             json.dump(graph_data, f, indent=2)
 
-        config_json_path = os.path.join("save", "config.json")
+        config_json_path = os.path.join(CONFIG_FOLDER, "config.json")
         if os.path.exists(config_json_path):
             with open(config_json_path, "r") as f:
                 all_configs = json.load(f)
@@ -191,7 +183,7 @@ def upload_graph(config_name):
         response.headers.add("Access-Control-Allow-Origin", "*")
         return response, 400
 
-    config_json_path = os.path.join("save", "config.json")
+    config_json_path = os.path.join(CONFIG_FOLDER, "config.json")
 
     try:
         with open(config_json_path, "r") as f:
@@ -233,13 +225,13 @@ def upload_graph(config_name):
  
 @app.route("/image/<filename>")
 def serve_image(filename):
-    return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
+    return send_from_directory(UPLOAD_FOLDER, filename)
 
 
 
 @app.route("/list_configs", methods=["GET"])
 def list_configs():
-    config_json_path = os.path.join("save", "config.json")
+    config_json_path = os.path.join(CONFIG_FOLDER, "config.json")
 
     if not os.path.exists(config_json_path):
         return jsonify([])  # retourne une liste vide si aucun fichier n'existe
@@ -261,7 +253,7 @@ def list_configs():
 @app.route("/load_config/<filename>", methods=["GET"])
 def load_config(filename):
     try:
-        with open(os.path.join("save", "config.json"), "r") as f:
+        with open(os.path.join(CONFIG_FOLDER, "config.json"), "r") as f:
             configuration_data = json.load(f)
 
             image = configuration_data[filename]["image"]
