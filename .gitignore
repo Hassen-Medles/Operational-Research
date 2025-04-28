@@ -1,3 +1,5 @@
 /FRONT/node_modules
 /BACK/__pycache__
 /BACK/__pycache__
+/BACK/__pycache__
+*.pyc
