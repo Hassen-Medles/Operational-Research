@@ -5,22 +5,22 @@ import { BASE_URL } from "@utils/apiURL"; // Assurez-vous que le chemin est corr
 import {uploadGraph} from "@utils/api"; // Assurez-vous que le chemin est correct
 import { uploadImage } from "./api";
 
-export const cheminImage = (filename) => `${BASE_URL}/image/${filename}`;
+export const cheminImage = (filename) => `/image/${filename}`;
 
 export const fetchConfigs = async () => {
-  const res = await axios.get(`${BASE_URL}/list_configs`);
+  const res = await axios.get(`/list_configs`);
   return res.data;
 };
 
 export const loadConfig = async (name) => {
-  const res = await axios.get(`${BASE_URL}/load_config/${name}`);
+  const res = await axios.get(`/load_config/${name}`);
   return res.data;
 };
 
 export const deleteConfig = async (configName) => {
   try {
     const response = await fetch(
-      `${BASE_URL.replace("10.116.130.43", "localhost")}/delete_config/${configName}`,
+      `/delete_config/${configName}`,
       {
         method: "DELETE",
       }
@@ -41,7 +41,7 @@ export const deleteConfig = async (configName) => {
 export const addConfig = async (configName) => {
   try {
     const response = await fetch(
-      `${BASE_URL.replace("10.116.130.43", "localhost")}/add_config/${configName}`,
+      `/add_config/${configName}`,
       {
         method: "POST",
       }

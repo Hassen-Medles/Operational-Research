@@ -2,7 +2,7 @@
     "graph": {
         "Edges": [
             {
-                "color": "#7e701e",
+                "color": "#28da7e",
                 "cost": 1,
                 "distance": 1,
                 "from": "1",
@@ -10,7 +10,7 @@
                 "to": "2"
             },
             {
-                "color": "#7e701e",
+                "color": "#28da7e",
                 "cost": 1,
                 "distance": 1,
                 "from": "2",
@@ -18,7 +18,7 @@
                 "to": "3"
             },
             {
-                "color": "#7e701e",
+                "color": "#28da7e",
                 "cost": 1,
                 "distance": 1,
                 "from": "3",
@@ -26,7 +26,7 @@
                 "to": "4"
             },
             {
-                "color": "#7e701e",
+                "color": "#28da7e",
                 "cost": 1,
                 "distance": 1,
                 "from": "4",
@@ -34,7 +34,7 @@
                 "to": "5"
             },
             {
-                "color": "#7e701e",
+                "color": "#28da7e",
                 "cost": 1,
                 "distance": 1,
                 "from": "5",
@@ -42,7 +42,7 @@
                 "to": "6"
             },
             {
-                "color": "#e8a341",
+                "color": "#77305d",
                 "cost": 1,
                 "distance": 1,
                 "from": "12",
@@ -50,7 +50,7 @@
                 "to": "11"
             },
             {
-                "color": "#6da0dd",
+                "color": "#28da7e",
                 "cost": 1,
                 "distance": 1,
                 "from": "11",
@@ -73,7 +73,7 @@
                 "to": "8"
             },
             {
-                "color": "#7e701e",
+                "color": "#28da7e",
                 "cost": 1,
                 "distance": 1,
                 "from": "8",
@@ -81,7 +81,7 @@
                 "to": "7"
             },
             {
-                "color": "#7e701e",
+                "color": "#28da7e",
                 "cost": 1,
                 "distance": 1,
                 "from": "19",
@@ -105,7 +105,7 @@
                 "to": "14"
             },
             {
-                "color": "#6da0dd",
+                "color": "#28da7e",
                 "cost": 1,
                 "distance": 1,
                 "from": "14",
@@ -176,7 +176,7 @@
                 "to": "15"
             },
             {
-                "color": "#7e701e",
+                "color": "#28da7e",
                 "cost": 5,
                 "distance": 4,
                 "from": "7",
@@ -192,7 +192,7 @@
                 "to": "25"
             },
             {
-                "color": "#526900",
+                "color": "#28da7e",
                 "cost": 5,
                 "distance": 4,
                 "from": "25",
@@ -200,7 +200,7 @@
                 "to": "14"
             },
             {
-                "color": "#526900",
+                "color": "#c29fe7",
                 "cost": 5,
                 "distance": 4,
                 "from": "11",
@@ -240,7 +240,7 @@
                 "to": "21"
             },
             {
-                "color": "#7e701e",
+                "color": "#28da7e",
                 "cost": 5,
                 "distance": 4,
                 "from": "6",
@@ -264,7 +264,7 @@
                 "to": "16"
             },
             {
-                "color": "#000",
+                "color": "#33b675",
                 "cost": 4,
                 "distance": 2,
                 "from": "31",
@@ -272,7 +272,7 @@
                 "to": "24"
             },
             {
-                "color": "#7d1179",
+                "color": "#33b675",
                 "cost": 4,
                 "distance": 44,
                 "from": "29",
