@@ -219,7 +219,7 @@ def upload_graph(config_name):
 
     with open(graph_path, 'w') as f:
         json.dump(data, f, indent=2)
-        
+    
         
     nom_fichier = "base.json"
     json_data = litjsonfichier(GRAPH_FOLDER,graph_path)
@@ -229,6 +229,7 @@ def upload_graph(config_name):
     if json_data:
         Gtemp,depot = construire_graphe(json_data)
         G = creer_graphe_complet_depuis_dijkstra(Gtemp) 
+        print("fefefefef;",G.edges(data=True))
         # ⚠️ Assure-toi d’avoir défini la fonction robust_vrp(G, depot) avant ça
 
         print("Depot trouvé : ", depot)
@@ -241,11 +242,13 @@ def upload_graph(config_name):
             print(f"Camion {i+1} : {' -> '.join(map(str, route))}")
         print("routes : ",routes)
         color_map = colorier_routes(routes, G)
-        print("Color map : ",color_map)
-        json_data["graph"]["Edges"] = appliquer_couleurs(json_data["graph"]["Edges"], color_map)
-        print("avant sauvegarde : ",json_data["graph"]["Edges"])
+        # print("Color map : ",color_map)
+        print("json_datadddddddddddddddddddd",json_data["graph"]["Edges"])
+        json_data["graph"]["Edges"] = appliquer_couleurs(G,json_data["graph"]["Edges"], color_map)
+        # print("avant sauvegarde : ",json_data["graph"]["Edges"])
         nouveau_nom = "resolved_" + graph_filename
         nom_config = os.path.splitext(graph_filename)[0]
+        print("nouveau\n"+str(json_data))
         sauvegarder_json(GRAPH_FOLDER,json_data, nouveau_nom)
         print(f"\n✅ Graphe coloré enregistré dans {nouveau_nom}")
     

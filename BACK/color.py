@@ -1,5 +1,7 @@
 import random
 
+import networkx as nx
+
 def generer_couleur():
     return "#{:06x}".format(random.randint(0, 0xFFFFFF))
 
@@ -15,23 +17,56 @@ def colorier_routes(routes, G):
     return edge_color_map
 
 
-def appliquer_couleurs(edge_list, edge_color_map):
-    new_edge_list = []
-    print("edge_list", edge_list)
-    print("edge_color_map", edge_color_map)
-    
-    for edge in edge_list:
-        # Vérifier chaque arête dans edge_color_map
-        for edge_color in edge_color_map:
-            # Comparer l'arête "from" et "to" avec celles dans la liste
-            if edge["from"] == edge_color["from"] and edge["to"] == edge_color["to"]:
-                print("edge trouvé", edge)
-                new_edge = dict(edge)  # Copie propre de l'arête
-                new_edge["color"] = edge_color["color"]  # Ajouter la couleur
-                new_edge_list.append(new_edge)  # Ajouter l'arête colorée
-                break  # Si on a trouvé l'arête, on sort du loop
-        else:
-            # Arête sans couleur si pas trouvée
-            new_edge_list.append(edge)
+def appliquer_couleurs(G, edge_list, edge_color_map):
+    print("Appliquer les couleurs aux arêtes...", edge_color_map)
+    graphcomplet = G.copy()
+    new_edge_list = list(edge_list)  # Copie de base
 
+    # Créer un dictionnaire de lookup pour retrouver les arêtes originales par (from, to)
+    edge_lookup = {(
+        edge["from"], edge["to"]): edge for edge in edge_list}  # Utiliser le tuple (from, to) comme clé
+
+    for edge_color in edge_color_map:
+        from_node = edge_color["from"]
+        to_node = edge_color["to"]
+        color = edge_color["color"]
+
+        # Chercher le chemin avec Dijkstra (ou une autre méthode si besoin) et calculer les valeurs
+        path = nx.shortest_path(G, source=from_node, target=to_node, weight="distance")
+        print(f"Path trouvé de {from_node} à {to_node} : {path}")
+
+        # Calculer les valeurs de distance, coût et temps en fonction des arêtes traversées
+        total_distance = 0
+        total_cost = 0
+        total_time = 0
+
+        # Pour chaque arête dans le chemin, additionner les poids
+        for i in range(len(path) - 1):
+            u, v = path[i], path[i + 1]
+            edge_data = graphcomplet[u][v]  # Récupérer les données de l'arête entre u et v
+
+            # Ajouter la distance, le coût et le temps
+            total_distance += edge_data.get("distance", 0)
+            total_cost += edge_data.get("cost", 0)
+            total_time += edge_data.get("time", 0)
+
+        # Créer la nouvelle arête avec les valeurs calculées et la couleur
+        print(f"Création et coloration de nouvelle arête {from_node} -> {to_node} "
+              f"(distance={total_distance}, cout={total_cost}, temps={total_time})")
+        new_edge = {
+            "from": from_node,
+            "to": to_node,
+            "distance": total_distance,
+            "cost": total_cost,
+            "time": total_time,
+            "color": color,
+        }
+
+        new_edge_list.append(new_edge)
+
+    print("Résultat final après coloration :", new_edge_list)
     return new_edge_list
+
+
+
+

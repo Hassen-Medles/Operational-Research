@@ -3,12 +3,12 @@ import {BASE_URL } from "@utils/apiURL"; // Assurez-vous que le chemin est corre
 import axios from "axios";
 
 export const fetchConfigs = async () => {
-  const res = await axios.get(`/list_configs`);
+  const res = await axios.get(`${BASE_URL}/list_configs`);
   return res.data;
 };
 
 export const loadConfig = async (configName) => {
-  const res = await axios.get(`/load_config/${configName}`);
+  const res = await axios.get(`${BASE_URL}/load_config/${configName}`);
   return res.data;
 };
 
@@ -22,7 +22,7 @@ export const uploadImage = async (configName, selectedFile) => {
   formData.append("image", selectedFile);
 
   try {
-    const res = await axios.post(`/upload_image/${configName}`, formData, {
+    const res = await axios.post(`${BASE_URL}/upload_image/${configName}`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
     console.log("Image uploaded:", res.data);
@@ -36,7 +36,7 @@ export const uploadGraph = async (configName, data) => {
   
   try {
 
-    const res = await axios.post(`/upload_graph/${configName}`, JSON.stringify(data), {
+    const res = await axios.post(`${BASE_URL}/upload_graph/${configName}`, JSON.stringify(data), {
       headers: { "Content-Type": "application/json" },
     });
 
@@ -49,7 +49,7 @@ export const uploadGraph = async (configName, data) => {
 
 export const loadGraph = async (configName) => {
   try {
-    const res = await axios.get(`/load_graph/${configName}`);
+    const res = await axios.get(`${BASE_URL}/load_graph/${configName}`);
     return res.data;
   } catch (error) {
     console.error("Erreur load graph:", error);
@@ -57,4 +57,4 @@ export const loadGraph = async (configName) => {
 };
 
 
-export const getImageUrl = (filename) => `/image/${filename}`;
+export const getImageUrl = (filename) => `${BASE_URL}/image/${filename}`;

@@ -117,5 +117,3 @@ def robust_vrp(G,num_vehicles,weight_type="distance", depot=0):
     return routes
 
 
-    routes = solve_vrp_with_graph(G, num_vehicles=5)
-    return routes

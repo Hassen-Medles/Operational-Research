@@ -16,10 +16,12 @@ def creer_graphe_complet_depuis_dijkstra(graphe_original):
             source = noeuds[i]
             cible = noeuds[j]
             try:
+                print(f"🔍 Calcul de la distance entre {source} et {cible}...")
                 # Cherche la distance du chemin le plus court
-                poids = nx.dijkstra_path_length(graphe_original, source, cible, weight="weight")
+                poids = nx.dijkstra_path_length(graphe_original, source, cible, weight="distance")
                 # Ajoute une arête dans le graphe complet avec ce poids
-                graphe_complet.add_edge(source, cible, distance=poids)
+                graphe_complet.add_edge(source, cible, distance=poids,aeterajouter= "true")
+                print("graphe_complet",graphe_complet.edges(data=True))
             except nx.NetworkXNoPath:
                 # Si aucun chemin n'existe, on ignore (ou tu peux choisir d'ajouter avec poids infini)
                 print(f"⚠️ Aucun chemin entre {source} et {cible}, arête ignorée.")

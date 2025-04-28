@@ -62,10 +62,11 @@ const GraphCanvas = ({
           // Trouver toutes les arêtes entre les deux mêmes nœuds (dans les deux sens)
           const parallelEdges = edges.filter(
             (e) =>
+              
               (e.from === edge.from && e.to === edge.to) ||
               (e.from === edge.to && e.to === edge.from)
           );
-
+          
           // Trouver l'index de cette arête parmi les arêtes parallèles
           const index = parallelEdges.findIndex((e) => e === edge);
 
@@ -75,7 +76,7 @@ const GraphCanvas = ({
           const length = Math.sqrt(dx * dx + dy * dy);
 
           // Vecteur normalisé perpendiculaire (pour décaler la ligne)
-          const offsetX = -dy / length;
+          const offsetX = dy / length;
           const offsetY = dx / length;
 
           // Coefficient d'espacement
@@ -90,7 +91,7 @@ const GraphCanvas = ({
           ctx.beginPath();
           ctx.moveTo(x1 + ox, y1 + oy);
           ctx.lineTo(x2 + ox, y2 + oy);
-          ctx.strokeStyle = edge.color || "#371ac7";
+          ctx.strokeStyle = edge.color || "#0000ff";
           ctx.stroke();
 
           // Texte des pondérations (aussi décalé)
@@ -100,7 +101,11 @@ const GraphCanvas = ({
           ctx.font = "bold 12px Arial";
 
           const label = `d:${edge.distance} c:${edge.cost} t:${edge.time}`;
-          ctx.fillText(label, midX + 5, midY - 5);
+          ctx.fillText(
+            label,
+            midX - 60 - (offsetX * offsetAmount),
+            midY + 10 + offsetX * offsetAmount
+          );
         }
       });
 
