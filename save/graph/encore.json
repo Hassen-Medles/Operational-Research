@@ -168,6 +168,110 @@
         "from": "7",
         "time": 1,
         "to": "6"
+      },
+      {
+        "color": "#df802e",
+        "cost": 0,
+        "distance": 1,
+        "from": "1",
+        "time": 0,
+        "to": "3"
+      },
+      {
+        "color": "#df802e",
+        "cost": 0,
+        "distance": 1,
+        "from": "3",
+        "time": 0,
+        "to": "4"
+      },
+      {
+        "color": "#df802e",
+        "cost": 0,
+        "distance": 1,
+        "from": "2",
+        "time": 0,
+        "to": "4"
+      },
+      {
+        "color": "#df802e",
+        "cost": 0,
+        "distance": 1,
+        "from": "2",
+        "time": 0,
+        "to": "7"
+      },
+      {
+        "color": "#df802e",
+        "cost": 0,
+        "distance": 1,
+        "from": "6",
+        "time": 0,
+        "to": "7"
+      },
+      {
+        "color": "#df802e",
+        "cost": 0,
+        "distance": 1,
+        "from": "1",
+        "time": 0,
+        "to": "6"
+      },
+      {
+        "color": "#1da804",
+        "cost": 0,
+        "distance": 1,
+        "from": "1",
+        "time": 0,
+        "to": "5"
+      },
+      {
+        "color": "#1da804",
+        "cost": 0,
+        "distance": 1,
+        "from": "5",
+        "time": 0,
+        "to": "8"
+      },
+      {
+        "color": "#1da804",
+        "cost": 0,
+        "distance": 1,
+        "from": "8",
+        "time": 0,
+        "to": "10"
+      },
+      {
+        "color": "#1da804",
+        "cost": 0,
+        "distance": 1,
+        "from": "9",
+        "time": 0,
+        "to": "10"
+      },
+      {
+        "color": "#1da804",
+        "cost": 0,
+        "distance": 1,
+        "from": "9",
+        "time": 0,
+        "to": "11"
+      },
+      {
+        "color": "#1da804",
+        "cost": 0,
+        "distance": 2,
+        "from": "1",
+        "time": 0,
+        "to": "11"
+      },
+      {
+        "from": "8",
+        "to": "12",
+        "distance": 5,
+        "cost": 5,
+        "time": 5,
+        "color": "#000"
       }
     ],
     "Nodes": [
@@ -258,6 +362,14 @@
         "label": "Node 11",
         "xRatio": 0.1755178907496781,
         "yRatio": 0.2828625177932998
+      },
+      {
+        "id": "12",
+        "label": "Node 12",
+        "xRatio": 0.8576879910079451,
+        "yRatio": 0.14612794270285318,
+        "color": "#000",
+        "estDepot": false
       }
     ]
   }

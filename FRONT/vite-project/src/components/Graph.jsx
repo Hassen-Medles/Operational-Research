@@ -100,7 +100,7 @@ const GraphCanvas = ({
           ctx.fillStyle = "black";
           ctx.font = "bold 12px Arial";
 
-          const label = `d:${edge.distance} c:${edge.cost} t:${edge.time}`;
+          const label = `d:${edge.distance}`;
           ctx.fillText(
             label,
             midX - 60 - (offsetX * offsetAmount),
