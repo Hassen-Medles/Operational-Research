@@ -50,9 +50,6 @@ def appliquer_couleurs(G, edge_list, edge_color_map):
             total_cost += edge_data.get("cost", 0)
             total_time += edge_data.get("time", 0)
 
-        # Créer la nouvelle arête avec les valeurs calculées et la couleur
-        print(f"Création et coloration de nouvelle arête {from_node} -> {to_node} "
-              f"(distance={total_distance}, cout={total_cost}, temps={total_time})")
         new_edge = {
             "from": from_node,
             "to": to_node,
@@ -64,7 +61,7 @@ def appliquer_couleurs(G, edge_list, edge_color_map):
 
         new_edge_list.append(new_edge)
 
-    print("Résultat final après coloration :", new_edge_list)
+
     return new_edge_list
 
 

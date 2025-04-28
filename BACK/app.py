@@ -229,13 +229,14 @@ def upload_graph(config_name):
     if json_data:
         Gtemp,depot = construire_graphe(json_data)
         G = creer_graphe_complet_depuis_dijkstra(Gtemp) 
+        
         print("fefefefef;",G.edges(data=True))
         # ⚠️ Assure-toi d’avoir défini la fonction robust_vrp(G, depot) avant ça
 
         print("Depot trouvé : ", depot)
 
         weight_type='distance'
-        routes = robust_vrp(G,4,weight_type, depot)
+        routes = robust_vrp(G,5,weight_type, depot)
 
         print("\n🚚 Tournées optimisées :")
         for i, route in enumerate(routes):
