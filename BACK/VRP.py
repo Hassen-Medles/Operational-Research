@@ -132,16 +132,19 @@ def robust_vrp(G,num_vehicles,weight_type="distance", depot=0):
 
 # def ant_colony_vrp_fast(graph, depot, ):
     max_nodes=5
-    num_ants=10
-    num_iterations=50
-    alpha=1
-    beta=2
+    num_ants=5
+    num_iterations=100
+    alpha=2
+    beta=4
     evaporation_rate=0.5
-    pheromone_init=1.0
+    pheromone_init=1.5
     
     pheromones = {edge: pheromone_init for edge in G.edges}
     best_routes = None
     best_cost = float('inf')
+    nodes = list(G.nodes)
+    nodes.remove(depot)
+
     for iteration in range(num_iterations):
         for ant in range(num_ants):
             unvisited = set(G.nodes)
@@ -149,11 +152,12 @@ def robust_vrp(G,num_vehicles,weight_type="distance", depot=0):
             routes = []
             total_cost = 0
 
-            while unvisited:
+            for _ in range(num_vehicles):
                 current_route = [depot]
                 current_node = depot
+                visited_this_trip = set()
 
-                while unvisited and len(current_route) - 1 < max_nodes: 
+                while unvisited and len(visited_this_trip) < (len(nodes) // num_vehicles) + (1 if len(unvisited) % num_vehicles != 0 else 0):
                     neighbors = [n for n in G.neighbors(current_node) if n in unvisited]
                     if not neighbors:
                         break
@@ -177,6 +181,7 @@ def robust_vrp(G,num_vehicles,weight_type="distance", depot=0):
                     current_route.append(next_node)
                     total_cost += G[current_node][next_node]['distance']
                     unvisited.remove(next_node)
+                    visited_this_trip.add(next_node)
                     current_node = next_node
 
                 if current_node != depot:
@@ -196,6 +201,7 @@ def robust_vrp(G,num_vehicles,weight_type="distance", depot=0):
             for i in range(len(route) - 1):
                 edge = (route[i], route[i + 1]) if (route[i], route[i + 1]) in pheromones else (route[i + 1], route[i])
                 pheromones[edge] += 1 / best_cost
+
 
     print(best_routes, best_cost)
     formatted_routes = []
