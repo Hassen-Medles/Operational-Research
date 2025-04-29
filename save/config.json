@@ -14,5 +14,13 @@
   "resolved_plus": {
     "graph": "resolved_plus.json",
     "image": "cesi-62fcf199a6cb5-logo-633af618ad7b3.png"
+  },
+  "charente": {
+    "graph": "charente.json",
+    "image": "charente41.gif"
+  },
+  "resolved_charente": {
+    "graph": "resolved_charente.json",
+    "image": "charente41.gif"
   }
 }

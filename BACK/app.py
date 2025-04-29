@@ -236,7 +236,7 @@ def upload_graph(config_name):
         print("Depot trouvé : ", depot)
 
         weight_type='distance'
-        routes = robust_vrp(G,5,weight_type, depot)
+        routes = robust_vrp(G,3,weight_type, depot)
 
         print("\n🚚 Tournées optimisées :")
         for i, route in enumerate(routes):
